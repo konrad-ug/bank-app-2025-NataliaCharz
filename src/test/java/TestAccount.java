@@ -33,7 +33,7 @@ public class TestAccount {
     }
 
     @Test
-    public void testPeselSetToInvalidWhenToLessCharacters(){
+    public void testPeselShouldSetToInvalidWhenToLessCharacters(){
         //given
         String name = "John";
         String surname = "Doe";
@@ -45,7 +45,7 @@ public class TestAccount {
     }
 
     @Test
-    public void testPeselSetToInvalidWhenContainsLetters(){
+    public void testPeselShouldSetToInvalidWhenContainsLetters(){
         //given
         String name = "John";
         String surname = "Doe";
@@ -57,7 +57,7 @@ public class TestAccount {
     }
 
     @Test
-    public void testPromoCodeWhenValidAddAmountToBalance(){
+    public void testPromoCodeWhenValidShouldAddAmountToBalance(){
         //given
         String name = "John";
         String surname = "Doe";
@@ -69,4 +69,16 @@ public class TestAccount {
         assertEquals(50, account.getBalance());
     }
 
+    @Test
+    public void testPromoCodeWhenInValidShouldAddZeroToBalance(){
+        //given
+        String name = "John";
+        String surname = "Doe";
+        String pesel = "73345678901";
+        String promoCode = "PROMO_1233";
+        //when
+        Account account = new Account(name, surname, pesel, promoCode);
+        //then
+        assertEquals(0, account.getBalance());
+    }
 }
