@@ -1,3 +1,5 @@
+import java.util.regex.Pattern;
+
 public class Account{
 
     private String name;
@@ -60,5 +62,24 @@ public class Account{
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+
+    public Double addIncomingTransfer(double income) {
+        String incomeToString = Double.toString(income);
+        if (income < 0 && !Pattern.matches("^[0-9]*/.[0-9]*$", incomeToString)){
+            throw new NumberFormatException("Wrong value or data type of incoming transfer.");
+        }
+        this.setBalance(getBalance() + income);
+        return this.balance;
+    }
+
+    public double makeOutgoingTransfer(double outgo) {
+        String outgoToString = Double.toString(outgo);
+        if (outgo < 0 && !Pattern.matches("^[0-9]*/.[0-9]*$", outgoToString)){
+            throw new NumberFormatException("Wrong value or data type of outgoing transfer.");
+        }
+        this.setBalance(getBalance() - outgo);
+        return this.balance;
     }
 }
