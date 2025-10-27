@@ -1,64 +1,59 @@
-public class Account{
+import java.util.regex.Pattern;
 
-    private String name;
-    private String surname;
-    private String pesel;
-    private double balance;
-    private String promoCode;
+public abstract class Account {
 
-    public Account(String name, String surname){
+    private final String name;
+    private final String identification;
+    protected double balance;
+
+    Account(String name, String identification){
         this.name = name;
-        this.surname = surname;
+        this.identification = identification;
     }
 
-    public Account(String name, String surname, String pesel){
-        this.name = name;
-        this.surname = surname;
-        this.pesel = PeselValidator.validatePesel(pesel);
-    }
+    public abstract double chargeAccount();
 
-    public Account(String name, String surname, String pesel, String promoCode){
-        this.name = name;
-        this.surname = surname;
-        this.pesel = PeselValidator.validatePesel(pesel);
-        if (promoCode != null){
-            if(PromoCodeValidator.validatePromoCode(promoCode) && PromoCodeValidator.validatePromoCodeWithCorrectYearBorn(this.pesel)){
-                this.balance = getBalance() + 50.0;
-            };
-        }
-    }
-
-
-    public void setName(String name){
-        this.name = name;
-    }
 
     public String getName(){
         return this.name;
     }
 
-    public void setSurname(String surname){
-        this.surname = surname;
+    public String getIdentification() {
+        return this.identification;
     }
 
-    public String getSurname(){
-        return this.surname;
+    public double getBalance(){
+        return this.balance;
     }
 
-    public void setPesel(String pesel){
-        this.pesel = pesel;
+    public Double incomingTransfer(double income) {
+        if (income < 0){
+            throw new NumberFormatException("Wrong value of incoming transfer.");
+        }
+        balance = getBalance() + income;
+        return this.balance;
     }
 
-    public String getPesel(){
-        return this.pesel;
+    public double outgoingTransfer(double outgo) {
+        if (getBalance() < outgo){
+            throw new NumberFormatException("Balance is lower than outgo");
+        }
+        if (outgo < 0){
+            throw new NumberFormatException("Wrong value of outgoing transfer.");
+        }
+        balance = getBalance() - outgo;
+        return this.balance;
     }
 
-
-    public double getBalance() {
-        return balance;
+    public double expressOutgoingTransfer(double outgo) {
+        if (getBalance() < outgo ){
+            throw new NumberFormatException("Wrong value of outgoing transfer");
+        }
+        if (outgo < 0){
+            throw new NumberFormatException("Wrong value of outgoing transfer.");
+        }
+        balance = getBalance() - outgo - chargeAccount();
+        return this.balance;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
 }

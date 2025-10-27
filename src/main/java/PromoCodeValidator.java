@@ -4,6 +4,9 @@ public class PromoCodeValidator {
 
     private static final String ACTUAL_PROMO_CODE = "^PROMO_.{3}$";
 
+    private PromoCodeValidator(){
+    }
+
     public static boolean validatePromoCode(String promoCode){
         if (!Pattern.matches(ACTUAL_PROMO_CODE, promoCode)){
             return false;
