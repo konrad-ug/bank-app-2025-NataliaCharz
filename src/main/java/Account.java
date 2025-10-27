@@ -1,85 +1,59 @@
 import java.util.regex.Pattern;
 
-public class Account{
+public abstract class Account {
 
-    private String name;
-    private String surname;
-    private String pesel;
-    private double balance;
-    private String promoCode;
+    private final String name;
+    private final String identification;
+    protected double balance;
 
-    public Account(String name, String surname){
+    Account(String name, String identification){
         this.name = name;
-        this.surname = surname;
+        this.identification = identification;
     }
 
-    public Account(String name, String surname, String pesel){
-        this.name = name;
-        this.surname = surname;
-        this.pesel = PeselValidator.validatePesel(pesel);
-    }
+    public abstract double chargeAccount();
 
-    public Account(String name, String surname, String pesel, String promoCode){
-        this.name = name;
-        this.surname = surname;
-        this.pesel = PeselValidator.validatePesel(pesel);
-        if (promoCode != null){
-            if(PromoCodeValidator.validatePromoCode(promoCode) && PromoCodeValidator.validatePromoCodeWithCorrectYearBorn(this.pesel)){
-                this.balance = getBalance() + 50.0;
-            };
-        }
-    }
-
-
-    public void setName(String name){
-        this.name = name;
-    }
 
     public String getName(){
         return this.name;
     }
 
-    public void setSurname(String surname){
-        this.surname = surname;
+    public String getIdentification() {
+        return this.identification;
     }
 
-    public String getSurname(){
-        return this.surname;
-    }
-
-    public void setPesel(String pesel){
-        this.pesel = pesel;
-    }
-
-    public String getPesel(){
-        return this.pesel;
-    }
-
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
-
-    public Double addIncomingTransfer(double income) {
-        String incomeToString = Double.toString(income);
-        if (income < 0 && !Pattern.matches("^[0-9]*/.[0-9]*$", incomeToString)){
-            throw new NumberFormatException("Wrong value or data type of incoming transfer.");
-        }
-        this.setBalance(getBalance() + income);
+    public double getBalance(){
         return this.balance;
     }
 
-    public double makeOutgoingTransfer(double outgo) {
-        String outgoToString = Double.toString(outgo);
-        if (outgo < 0 && !Pattern.matches("^[0-9]*/.[0-9]*$", outgoToString)){
-            throw new NumberFormatException("Wrong value or data type of outgoing transfer.");
+    public Double incomingTransfer(double income) {
+        if (income < 0){
+            throw new NumberFormatException("Wrong value of incoming transfer.");
         }
-        this.setBalance(getBalance() - outgo);
+        balance = getBalance() + income;
         return this.balance;
     }
+
+    public double outgoingTransfer(double outgo) {
+        if (getBalance() < outgo){
+            throw new NumberFormatException("Balance is lower than outgo");
+        }
+        if (outgo < 0){
+            throw new NumberFormatException("Wrong value of outgoing transfer.");
+        }
+        balance = getBalance() - outgo;
+        return this.balance;
+    }
+
+    public double expressOutgoingTransfer(double outgo) {
+        if (getBalance() < outgo ){
+            throw new NumberFormatException("Wrong value of outgoing transfer");
+        }
+        if (outgo < 0){
+            throw new NumberFormatException("Wrong value of outgoing transfer.");
+        }
+        balance = getBalance() - outgo - chargeAccount();
+        return this.balance;
+    }
+
 }

@@ -1,35 +1,41 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class TestAccount {
+public class TestPersonalAccount {
+
+    private PersonalAccount personalAccount;
+
+    @BeforeEach
+    public void setUp(){
+        String name = "John";
+        String surname = "Doe";
+        personalAccount = new PersonalAccount(name, surname, "12345678901", null);
+    }
 
     @Test
     public void testAccountCreation() {
         //given
         String name = "John";
         String surname = "Doe";
+        double balance = 0;
         //when
-        Account account = new Account(name, surname);
         //then
-        assertEquals("John", account.getName());
-        assertEquals("Doe", account.getSurname());
-        assertEquals(0.0, account.getBalance());
+        assertEquals(name, personalAccount.getName());
+        assertEquals(surname, personalAccount.getSurname());
+        assertEquals(0, personalAccount.getBalance());
     }
 
     @Test
     public void testAccountWithGivenBalance(){
         //given
-        String name = "John";
-        String surname = "Doe";
-        double balance = 10000.0;
+        double balance = 0;
         //when
-        Account account = new Account(name, surname);
-        account.setBalance(balance);
         //then
-        assertEquals(10000.0, account.getBalance());
+        assertEquals(0, personalAccount.getBalance());
     }
 
     @Test
@@ -37,11 +43,11 @@ public class TestAccount {
         //given
         String name = "John";
         String surname = "Doe";
-        String pesel = "123456789";
+        String pesel = "123";
         //when
-        Account account = new Account(name, surname, pesel);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel, null);
         //then
-        assertEquals("Invalid", account.getPesel());
+        assertEquals("Invalid", account.getIdentification());
     }
 
     @Test
@@ -49,11 +55,11 @@ public class TestAccount {
         //given
         String name = "John";
         String surname = "Doe";
-        String pesel = "JohnDoe";
+        String pesel = "John";
         //when
-        Account account = new Account(name, surname, pesel);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel, null);
         //then
-        assertEquals("Invalid", account.getPesel());
+        assertEquals("Invalid", account.getIdentification());
     }
 
     @Test
@@ -64,9 +70,9 @@ public class TestAccount {
         String pesel = "73345678901";
         String promoCode = "PROMO_123";
         //when
-        Account account = new Account(name, surname, pesel, promoCode);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
         //then
-        assertEquals(50, account.getBalance());
+        assertEquals(50.0, account.getBalance());
     }
 
     @Test
@@ -77,7 +83,7 @@ public class TestAccount {
         String pesel = "73345678901";
         String promoCode = "PROMO_1233";
         //when
-        Account account = new Account(name, surname, pesel, promoCode);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
         //then
         assertEquals(0, account.getBalance());
     }
