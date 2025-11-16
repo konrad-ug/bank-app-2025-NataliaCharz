@@ -2,7 +2,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class TestPersonalAccount {
@@ -10,7 +9,7 @@ public class TestPersonalAccount {
     private PersonalAccount personalAccount;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         String name = "John";
         String surname = "Doe";
         personalAccount = new PersonalAccount(name, surname, "12345678901", null);
@@ -30,7 +29,7 @@ public class TestPersonalAccount {
     }
 
     @Test
-    public void testAccountWithGivenBalance(){
+    public void testAccountWithGivenBalance() {
         //given
         double balance = 0;
         //when
@@ -39,7 +38,7 @@ public class TestPersonalAccount {
     }
 
     @Test
-    public void testPeselShouldSetToInvalidWhenToLessCharacters(){
+    public void testPeselShouldSetToInvalidWhenToLessCharacters() {
         //given
         String name = "John";
         String surname = "Doe";
@@ -51,7 +50,7 @@ public class TestPersonalAccount {
     }
 
     @Test
-    public void testPeselShouldSetToInvalidWhenContainsLetters(){
+    public void testPeselShouldSetToInvalidWhenContainsLetters() {
         //given
         String name = "John";
         String surname = "Doe";
@@ -63,7 +62,7 @@ public class TestPersonalAccount {
     }
 
     @Test
-    public void testPromoCodeWhenValidShouldAddAmountToBalance(){
+    public void testPromoCodeWhenValidShouldAddAmountToBalance() {
         //given
         String name = "John";
         String surname = "Doe";
@@ -76,7 +75,7 @@ public class TestPersonalAccount {
     }
 
     @Test
-    public void testPromoCodeWhenInValidShouldAddZeroToBalance(){
+    public void testPromoCodeWhenInValidShouldAddZeroToBalance() {
         //given
         String name = "John";
         String surname = "Doe";

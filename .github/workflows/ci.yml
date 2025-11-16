@@ -1,0 +1,66 @@
+name: Unit tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Create directories
+        run: |
+          mkdir -p build/classes
+          mkdir -p build/test-classes
+          mkdir -p tools
+
+      - name: Download junit-platform-console-standalone
+        run: |
+          JAR=tools/junit-platform-console-standalone.jar
+          if [ ! -f "$JAR" ]; then
+            curl -L -o "$JAR" "https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.9.3/junit-platform-console-standalone-1.9.3.jar"
+          fi
+
+      - name: Compile main classes
+        run: |
+          MAIN_SRCS=$(find src/main/java -name "*.java" || true)
+          if [ -n "$MAIN_SRCS" ]; then
+            javac -d build/classes $MAIN_SRCS
+          else
+            echo "No main sources found (src/main/java)."
+          fi
+
+      - name: Compile test classes
+        run: |
+          TEST_SRCS=$(find src/test/java -name "*.java" || true)
+          if [ -n "$TEST_SRCS" ]; then
+            javac -cp "build/classes:tools/junit-platform-console-standalone.jar" -d build/test-classes $TEST_SRCS
+          else
+            echo "No test sources found (src/test/java)."
+          fi
+
+      - name: Run tests (JUnit Platform Console)
+        run: |
+          ls -R build || true
+          java -jar tools/junit-platform-console-standalone.jar \
+            --class-path build/classes:build/test-classes \
+            --scan-class-path \
+            --reports-dir build/test-reports
+
+      - name: Upload test reports (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-reports
+          path: build/test-reports || build
