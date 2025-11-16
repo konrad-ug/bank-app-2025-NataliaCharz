@@ -59,7 +59,7 @@ public class TestBalance {
         Exception exception = assertThrows(NumberFormatException.class, () -> {
             personalAccount.outgoingTransfer(1000);
         });
-        String expectedMessage = "Wrong value of outgoing transfer";
+        String expectedMessage = "Balance is lower than outgo";
         String actualMessage = exception.getMessage();
         //then
         assertEquals(expectedMessage, actualMessage);
