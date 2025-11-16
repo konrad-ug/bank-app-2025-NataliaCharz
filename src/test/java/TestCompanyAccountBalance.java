@@ -60,6 +60,18 @@ public class TestCompanyAccountBalance {
     }
 
     @Test
+    public void testCompanyAccountThrowExceptionWhenOutgoingTransferValueBelowZero(){
+        //given + when
+        Exception exception = assertThrows(NumberFormatException.class, () -> {
+            companyAccount.outgoingTransfer(-1000);
+        });
+        String expectedMessage = "Wrong value of outgoing transfer.";
+        String actualMessage = exception.getMessage();
+        //then
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
     public void testCompanyAccountExpressOutgoingTransfer(){
         //given
         double income = 2000;

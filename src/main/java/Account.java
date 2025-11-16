@@ -46,13 +46,8 @@ public abstract class Account {
     }
 
     public double expressOutgoingTransfer(double outgo) {
-        if (getBalance() < outgo ){
-            throw new NumberFormatException("Wrong value of outgoing transfer");
-        }
-        if (outgo < 0){
-            throw new NumberFormatException("Wrong value of outgoing transfer.");
-        }
-        balance = getBalance() - outgo - chargeAccount();
+        outgoingTransfer(outgo);
+        balance = getBalance() - chargeAccount();
         return this.balance;
     }
 
