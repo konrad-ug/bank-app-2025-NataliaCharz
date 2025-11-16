@@ -30,12 +30,12 @@ public class TestBalance {
     }
 
     @Test
-    public void throwExceptionWhenInvalidAmountAsIncomingTransfer() {
+    public void testThrowExceptionWhenInvalidAmountAsIncomingTransfer() {
         //given + when
         Exception exception = assertThrows(NumberFormatException.class, () -> {
             personalAccount.incomingTransfer(-1000);
         });
-        String expectedMessage = "Wrong value or data type of incoming transfer.";
+        String expectedMessage = "Wrong value of incoming transfer.";
         String actualMessage = exception.getMessage();
         //then
         assertTrue(actualMessage.contains(expectedMessage));
