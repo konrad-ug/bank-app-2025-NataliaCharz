@@ -2,11 +2,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestBalance {
 
     private PersonalAccount personalAccount;
+    private CompanyAccount companyAccount;
 
     @BeforeEach
     public void setUp(){
@@ -14,6 +14,9 @@ public class TestBalance {
         String surname = "Doe";
         String pesel = "87321930271";
         personalAccount = new PersonalAccount(name, surname, pesel, null);
+        String companyName = "Alfa";
+        String nip = "12345678901";
+        companyAccount = new CompanyAccount(companyName, nip);
     }
 
     @Test
@@ -21,9 +24,9 @@ public class TestBalance {
         //given
         double transfer = 1000.0;
         //when
-        Double changedBalance = personalAccount.incomingTransfer(transfer);
+        Double balance = personalAccount.incomingTransfer(transfer);
         //then
-        assertEquals(1000.0, changedBalance);
+        assertEquals(1000.0, balance);
     }
 
     @Test
@@ -42,11 +45,12 @@ public class TestBalance {
     public void testGetBalanceAfterOutgoingTransfer() {
         //given
         double income = 2000;
+        double outgo = 1000;
         //when
         personalAccount.incomingTransfer(income);
-        double changedBalance = personalAccount.outgoingTransfer(1000);
+        double balance = personalAccount.outgoingTransfer(outgo);
         //then
-        assertEquals(1000.0, changedBalance);
+        assertEquals(1000.0, balance);
     }
 
     @Test
@@ -60,6 +64,44 @@ public class TestBalance {
         //then
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    public void testExpressOutgoingTransferForPersonalAccount(){
+        //given
+        double income = 2000;
+        double outgo = 1000;
+        //when
+        personalAccount.incomingTransfer(income);
+        double balance = personalAccount.expressOutgoingTransfer(outgo);
+        //then
+        assertEquals(999, balance);
+    }
+
+    @Test
+    public void testExpressOutgoingTransferForCompanyAccount(){
+        //given
+        double income = 2000;
+        double outgo = 1000;
+        //when
+        companyAccount.incomingTransfer(income);
+        double balance = companyAccount.expressOutgoingTransfer(outgo);
+        //then
+        assertEquals(995, balance);
+    }
+
+    @Test
+    public void testBalanceLessThanZeroWithExpressTransferForPersonalAccount(){
+        //given
+        double income = 1000;
+        double outgo = 1000;
+        //when
+        personalAccount.incomingTransfer(income);
+        double balance = personalAccount.expressOutgoingTransfer(outgo);
+        //then
+        assertEquals(-1, balance);
+
+    }
+
 
 }
 
