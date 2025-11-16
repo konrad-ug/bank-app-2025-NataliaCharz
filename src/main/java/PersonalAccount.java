@@ -13,10 +13,6 @@ public class PersonalAccount extends Account {
         }
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
     public String getSurname() {
         return this.surname;
     }
