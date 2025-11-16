@@ -7,6 +7,5 @@ public class Main {
                 "94564323454",
                 "PROMO_XYZ");
         a.incomingTransfer(-20);
-
     }
 }

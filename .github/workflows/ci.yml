@@ -43,6 +43,31 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco
 
+      - name: Inspect test & jacoco outputs
+        run: |
+          echo "=== TARGET CONTENT ==="
+          find target -maxdepth 3 -ls || true
+
+          echo "=== SUREFIRE REPORTS (first 200 lines each) ==="
+          for f in target/surefire-reports/*.txt; do
+            echo "---- $f ----"
+            sed -n '1,200p' "$f" || true
+          done || true
+
+          echo "=== JACOCO FILES ==="
+          ls -l target/jacoco.exec target/site/jacoco || true
+
+          if [ -f target/site/jacoco/jacoco.xml ]; then
+            echo "JACOCO XML exists - extract counters:"
+            xmllint --xpath "string(//report/counter[@type='INSTRUCTION']/@covered)" target/site/jacoco/jacoco.xml || true
+            xmllint --xpath "string(//report/counter[@type='INSTRUCTION']/@missed)" target/site/jacoco/jacoco.xml || true
+            echo "---- show small part of index.html ----"
+            sed -n '1,80p' target/site/jacoco/index.html || true
+          else
+            echo "No jacoco.xml found. Listing target/site:"
+            ls -l target/site || true
+          fi
+
       - name: Upload Surefire reports (optional)
         if: always()
         uses: actions/upload-artifact@v4

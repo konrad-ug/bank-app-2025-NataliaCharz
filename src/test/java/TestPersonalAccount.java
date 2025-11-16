@@ -12,7 +12,11 @@ public class TestPersonalAccount {
     public void setUp() {
         String name = "John";
         String surname = "Doe";
-        personalAccount = new PersonalAccount(name, surname, "12345678901", null);
+        personalAccount = new PersonalAccount(
+                name,
+                surname,
+                "12345678901",
+                null);
     }
 
     @Test
@@ -20,7 +24,6 @@ public class TestPersonalAccount {
         //given
         String name = "John";
         String surname = "Doe";
-        double balance = 0;
         //when
         //then
         assertEquals(name, personalAccount.getName());
@@ -38,7 +41,7 @@ public class TestPersonalAccount {
     }
 
     @Test
-    public void testPeselShouldSetToInvalidWhenToLessCharacters() {
+    public void testPeselShouldSetToInvalidWhenTooShort() {
         //given
         String name = "John";
         String surname = "Doe";
