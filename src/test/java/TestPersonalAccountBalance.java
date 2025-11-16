@@ -3,7 +3,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestBalance {
+public class TestPersonalAccountBalance {
 
     private PersonalAccount personalAccount;
     private CompanyAccount companyAccount;
@@ -14,13 +14,10 @@ public class TestBalance {
         String surname = "Doe";
         String pesel = "87321930271";
         personalAccount = new PersonalAccount(name, surname, pesel, null);
-        String companyName = "Alfa";
-        String nip = "12345678901";
-        companyAccount = new CompanyAccount(companyName, nip);
     }
 
     @Test
-    public void addProperAmountToBalanceAsIncomingTransfer() {
+    public void testPersonalAccountAddProperAmountToBalanceIncomingTransfer() {
         //given
         double transfer = 1000.0;
         //when
@@ -30,7 +27,7 @@ public class TestBalance {
     }
 
     @Test
-    public void testThrowExceptionWhenInvalidAmountAsIncomingTransfer() {
+    public void testPersonalAccountThrowExceptionWhenInvalidAmountIncomingTransfer() {
         //given + when
         Exception exception = assertThrows(NumberFormatException.class, () -> {
             personalAccount.incomingTransfer(-1000);
@@ -42,7 +39,7 @@ public class TestBalance {
     }
 
     @Test
-    public void testGetBalanceAfterOutgoingTransfer() {
+    public void testPersonalAccountGetBalanceAfterOutgoingTransfer() {
         //given
         double income = 2000;
         double outgo = 1000;
@@ -54,7 +51,7 @@ public class TestBalance {
     }
 
     @Test
-    public void testThrowExceptionWhenOutgoingTransferValueHigherThanBalance(){
+    public void testPersonalAccountThrowExceptionWhenOutgoingTransferValueHigherThanBalance(){
         //given + when
         Exception exception = assertThrows(NumberFormatException.class, () -> {
             personalAccount.outgoingTransfer(1000);
@@ -66,7 +63,7 @@ public class TestBalance {
     }
 
     @Test
-    public void testExpressOutgoingTransferForPersonalAccount(){
+    public void testPersonalAccountExpressOutgoingTransfer(){
         //given
         double income = 2000;
         double outgo = 1000;
@@ -78,19 +75,7 @@ public class TestBalance {
     }
 
     @Test
-    public void testExpressOutgoingTransferForCompanyAccount(){
-        //given
-        double income = 2000;
-        double outgo = 1000;
-        //when
-        companyAccount.incomingTransfer(income);
-        double balance = companyAccount.expressOutgoingTransfer(outgo);
-        //then
-        assertEquals(995, balance);
-    }
-
-    @Test
-    public void testBalanceLessThanZeroWithExpressTransferForPersonalAccount(){
+    public void testPersonalAccountExpressTransferBalanceBelowZero(){
         //given
         double income = 1000;
         double outgo = 1000;
@@ -99,7 +84,6 @@ public class TestBalance {
         double balance = personalAccount.expressOutgoingTransfer(outgo);
         //then
         assertEquals(-1, balance);
-
     }
 
 
