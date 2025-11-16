@@ -1,3 +1,5 @@
+package validator;
+
 import java.util.regex.Pattern;
 
 public class PromoCodeValidator {

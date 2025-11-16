@@ -1,5 +1,9 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -93,5 +97,40 @@ public class TestCompanyAccountBalance {
         double balance = companyAccount.expressOutgoingTransfer(outgo);
         //then
         assertEquals(-5, balance);
+    }
+
+    @Test
+    public void testCompanyAccountHistoryWhenIncomingTransfer(){
+        //given
+        double income = 1000;
+        //when
+        companyAccount.incomingTransfer(income);
+        List<Double> history = companyAccount.getHistory();
+        //then
+        assertEquals(List.of(1000.0), history);
+    }
+
+    @Test
+    public void testCompanyAccountHistoryWhenOutgoingTransfer(){
+        //given
+        double income = 2000;
+        companyAccount.incomingTransfer(income);
+        double outgo = 1000;
+        //when
+        companyAccount.outgoingTransfer(outgo);
+        //then
+        assertEquals(List.of(2000.0, -1000.0), companyAccount.getHistory());
+    }
+
+    @Test
+    public void testCompanyAccountHistoryWhenExpressOutgoingTransfer(){
+        //given
+        double income = 2000;
+        companyAccount.incomingTransfer(income);
+        double outgo = 1000;
+        //when
+        companyAccount.expressOutgoingTransfer(outgo);
+        //then
+        assertEquals(List.of(2000.0, -1000.0, -5.0), companyAccount.getHistory());
     }
 }

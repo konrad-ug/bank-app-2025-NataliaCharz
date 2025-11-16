@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestPersonalAccountBalance {
@@ -66,27 +68,60 @@ public class TestPersonalAccountBalance {
     public void testPersonalAccountExpressOutgoingTransfer(){
         //given
         double income = 2000;
+        personalAccount.incomingTransfer(income);
         double outgo = 1000;
         //when
-        personalAccount.incomingTransfer(income);
-        double balance = personalAccount.expressOutgoingTransfer(outgo);
+        personalAccount.expressOutgoingTransfer(outgo);
         //then
-        assertEquals(999, balance);
+        assertEquals(999, personalAccount.getBalance());
     }
 
     @Test
     public void testPersonalAccountExpressTransferBalanceBelowZero(){
         //given
         double income = 1000;
+        personalAccount.incomingTransfer(income);
         double outgo = 1000;
         //when
-        personalAccount.incomingTransfer(income);
-        double balance = personalAccount.expressOutgoingTransfer(outgo);
+        personalAccount.expressOutgoingTransfer(outgo);
         //then
-        assertEquals(-1, balance);
+        assertEquals(-1, personalAccount.getBalance());
     }
 
+    @Test
+    public void testPersonalAccountHistoryWhenIncomingTransfer(){
+        //given
+        double income = 1000;
+        //when
+        personalAccount.incomingTransfer(income);
+        List<Double> history = personalAccount.getHistory();
+        //then
+        assertEquals(List.of(1000.0), history);
+    }
 
+    @Test
+    public void testPersonalAccountHistoryWhenOutgoingTransfer(){
+        //given
+        double income = 2000;
+        personalAccount.incomingTransfer(income);
+        double outgo = 1000;
+        //when
+        personalAccount.outgoingTransfer(outgo);
+        //then
+        assertEquals(List.of(2000.0, -1000.0), personalAccount.getHistory());
+    }
+
+    @Test
+    public void testPersonalAccountHistoryWhenExpressOutgoingTransfer(){
+        //given
+        double income = 2000;
+        personalAccount.incomingTransfer(income);
+        double outgo = 1000;
+        //when
+        personalAccount.expressOutgoingTransfer(outgo);
+        //then
+        assertEquals(List.of(2000.0, -1000.0, -1.0), personalAccount.getHistory());
+    }
 }
 
 

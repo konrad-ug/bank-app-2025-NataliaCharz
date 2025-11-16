@@ -1,3 +1,5 @@
+import validator.NipValidator;
+
 public class CompanyAccount extends Account{
 
     CompanyAccount(String companyName, String nip){

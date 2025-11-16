@@ -1,3 +1,5 @@
+package validator;
+
 import java.util.regex.Pattern;
 
 public class NipValidator {
@@ -8,7 +10,7 @@ public class NipValidator {
     }
 
     public static String validateNip(String nip) {
-        if (!Pattern.matches(NIP_REGEX, nip) || nip == null) {
+        if (nip == null || !Pattern.matches(NIP_REGEX, nip)) {
             return "Invalid";
         } else {
             return nip;

@@ -1,3 +1,5 @@
+package validator;
+
 import java.util.regex.Pattern;
 
 public class PeselValidator {
@@ -8,7 +10,7 @@ public class PeselValidator {
     }
 
     public static String validatePesel(String pesel) {
-        if (!Pattern.matches(PESEL_REGEX, pesel) || pesel == null) {
+        if (pesel == null || !Pattern.matches(PESEL_REGEX, pesel)) {
             return "Invalid";
         } else {
             return pesel;

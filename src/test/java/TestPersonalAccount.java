@@ -65,6 +65,17 @@ public class TestPersonalAccount {
     }
 
     @Test
+    public void testPeselInvalidWhenNull() {
+        //given
+        String name = "John";
+        String surname = "Doe";
+        //when
+        PersonalAccount account = new PersonalAccount(name, surname, null, null);
+        //then
+        assertEquals("Invalid", account.getIdentification());
+    }
+
+    @Test
     public void testPromoCodeWhenValidShouldAddAmountToBalance() {
         //given
         String name = "John";
@@ -75,6 +86,32 @@ public class TestPersonalAccount {
         PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
         //then
         assertEquals(50.0, account.getBalance());
+    }
+
+    @Test
+    public void testPromoCodeInvalidBalanceNotChanged() {
+        //given
+        String name = "John";
+        String surname = "Doe";
+        String pesel = "73345678901";
+        String promoCode = "incorrect";
+        //when
+        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
+        //then
+        assertEquals(0.0, account.getBalance());
+    }
+
+    @Test
+    public void testPromoCodeValidPersonTooOldBalanceNotChanged(){
+        //given
+        String name = "John";
+        String surname = "Doe";
+        String pesel = "19345678901";
+        String promoCode = "PROMO_123";
+        //when
+        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
+        //then
+        assertEquals(0.0, account.getBalance());
     }
 
     @Test

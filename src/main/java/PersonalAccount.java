@@ -1,8 +1,9 @@
-import java.util.regex.Pattern;
+import validator.PeselValidator;
+import validator.PromoCodeValidator;
 
 public class PersonalAccount extends Account {
 
-    private String surname;
+    private final String surname;
     private String promoCode;
 
     public PersonalAccount(String name, String surname, String pesel, String promoCode) {
@@ -15,17 +16,6 @@ public class PersonalAccount extends Account {
 
     public String getSurname() {
         return this.surname;
-    }
-
-    public String getPromoCode() {
-        return promoCode;
-    }
-
-    public void setPromoCode(String promoCode) {
-        this.promoCode = promoCode;
-        if (PromoCodeValidator.validatePromoCode(promoCode) && PromoCodeValidator.validatePromoCodeWithCorrectYearBorn(getIdentification())) {
-            balance += 50.0;
-        }
     }
 
     @Override
