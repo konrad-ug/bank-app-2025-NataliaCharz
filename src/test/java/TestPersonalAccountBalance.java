@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestPersonalAccountBalance {
 
     private PersonalAccount personalAccount;
-    private CompanyAccount companyAccount;
 
     @BeforeEach
     public void setUp(){
