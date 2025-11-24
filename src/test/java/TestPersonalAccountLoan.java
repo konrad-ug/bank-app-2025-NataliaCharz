@@ -1,7 +1,11 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,19 +14,28 @@ public class TestPersonalAccountLoan {
     private PersonalAccount personalAccount;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         String name = "John";
         String surname = "Doe";
         String pesel = "87321930271";
         personalAccount = new PersonalAccount(name, surname, pesel, null);
     }
 
+    private void createBalanceAndHistory(List<Double> amounts) {
+        for (Double number : amounts) {
+            if (number == null) continue;
+            if (number > 0) {
+                personalAccount.incomingTransfer(number);
+            } else {
+                personalAccount.outgoingTransfer(-number);
+            }
+        }
+    }
+
     @Test
-    public void testThreeLastTransactionsAreIncome(){
+    public void testThreeLastTransactionsAreIncome() {
         //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
+        createBalanceAndHistory(List.of(1000.0, 1000.0, 1000.0));
         //when
         boolean lastThree = personalAccount.lastThreeTransactionsAreIncome();
         //then
@@ -30,122 +43,43 @@ public class TestPersonalAccountLoan {
     }
 
     @Test
-    public void testThreeLastTransactionsAreNotIncome(){
+    public void testThreeLastTransactionsAreNotIncome() {
         //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.outgoingTransfer(50);
-        personalAccount.incomingTransfer(1000);
+        createBalanceAndHistory(List.of(1000.0, -50.0, 1000.0));
         //when
         boolean lastThree = personalAccount.lastThreeTransactionsAreIncome();
         //then
         assertFalse(lastThree);
     }
 
-    @Test
-    public void testFiveLastTransactionAreBiggerThanLoan(){
-        //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        double loan = 4500;
-        //when
-        boolean test = personalAccount.lastFiveTransactionsMustBeLargerThanLoan(loan);
-        //then
-        assertTrue(test);
+    @ParameterizedTest
+    @MethodSource("provideLastFiveHistories")
+    void testLastFiveTransactionsMustBeLargerThanLoan(List<Double> history, double loan, boolean expected) {
+        createBalanceAndHistory(history);
+        assertEquals(expected, personalAccount.lastFiveTransactionsMustBeLargerThanLoan(loan));
     }
 
-    @Test
-    public void testFiveLastTransactionAreSmallerThanLoan(){
-        //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        double loan = 5500;
-        //when
-        boolean test = personalAccount.lastFiveTransactionsMustBeLargerThanLoan(loan);
-        //then
-        assertFalse(test);
+    static Stream<Arguments> provideLastFiveHistories() {
+        return Stream.of(
+                Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0, 1000.0), 4500.0, true),
+                Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0, 1000.0), 5500.0, false),
+                Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0), 500.0, false)
+        );
     }
 
-    @Test
-    public void testNotEnoughTransactionForFiveTransactionConditionLoan(){
-        //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        double loan = 500;
-        //when
-        boolean test = personalAccount.lastFiveTransactionsMustBeLargerThanLoan(loan);
-        //then
-        assertFalse(test);
+    @ParameterizedTest
+    @MethodSource("provideHistoryForLoan")
+    void testSubmitForLoan(List<Double> history, double loan, boolean expected) {
+        createBalanceAndHistory(history);
+        assertEquals(expected, personalAccount.submitForLoan(loan));
     }
 
-    @Test
-    public void testSubmitForLoanWhenBothConditionsTrue(){
-        //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        double loan = 4000;
-        //when
-        boolean test = personalAccount.submitForLoan(loan);
-        //then
-        assertTrue(test);
-        assertEquals(List.of(1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 4000.0), personalAccount.getHistory());
-    }
-
-    @Test
-    public void testSubmitForLoanWhenBothConditionsFalse(){
-        //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.outgoingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        double loan = 6000;
-        //when
-        boolean test = personalAccount.submitForLoan(loan);
-        //then
-        assertFalse(test);
-        assertEquals(List.of(1000.0, 1000.0, -1000.0, 1000.0, 1000.0), personalAccount.getHistory());
-    }
-
-    @Test
-    public void testSubmitForLoanWhenLastThreeTransferAreIncomeTrue(){
-        //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.outgoingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        double loan = 6000;
-        //when
-        boolean test = personalAccount.submitForLoan(loan);
-        //then
-        assertTrue(test);
-        assertEquals(List.of(1000.0, -1000.0, 1000.0, 1000.0, 1000.0, 6000.0), personalAccount.getHistory());
-    }
-
-    @Test
-    public void testSubmitForLoanWhenLastFiveTransferAreLargerThanLoanTrue(){
-        //given
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        personalAccount.outgoingTransfer(1000);
-        personalAccount.incomingTransfer(1000);
-        double loan = 2500;
-        //when
-        boolean test = personalAccount.submitForLoan(loan);
-        //then
-        assertTrue(test);
-        assertEquals(List.of(1000.0, 1000.0, 1000.0, -1000.0, 1000.0, 2500.0), personalAccount.getHistory());
+    static Stream<Arguments> provideHistoryForLoan() {
+        return Stream.of(
+                Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0, 1000.0), 4000.0, true),
+                Arguments.of(List.of(1000.0, 1000.0, -1000.0, 1000.0, 1000.0), 6000.0, false),
+                Arguments.of(List.of(1000.0, -1000.0, 1000.0, 1000.0, 1000.0), 6000.0, true),
+                Arguments.of(List.of(1000.0, 1000.0, 1000.0, -1000.0, 1000.0), 2500.0, true)
+        );
     }
 }
