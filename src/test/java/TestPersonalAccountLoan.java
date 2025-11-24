@@ -32,44 +32,9 @@ public class TestPersonalAccountLoan {
         }
     }
 
-    @Test
-    public void testThreeLastTransactionsAreIncome() {
-        //given
-        createBalanceAndHistory(List.of(1000.0, 1000.0, 1000.0));
-        //when
-        boolean lastThree = personalAccount.lastThreeTransactionsAreIncome();
-        //then
-        assertTrue(lastThree);
-    }
-
-    @Test
-    public void testThreeLastTransactionsAreNotIncome() {
-        //given
-        createBalanceAndHistory(List.of(1000.0, -50.0, 1000.0));
-        //when
-        boolean lastThree = personalAccount.lastThreeTransactionsAreIncome();
-        //then
-        assertFalse(lastThree);
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideLastFiveHistories")
-    void testLastFiveTransactionsMustBeLargerThanLoan(List<Double> history, double loan, boolean expected) {
-        createBalanceAndHistory(history);
-        assertEquals(expected, personalAccount.lastFiveTransactionsMustBeLargerThanLoan(loan));
-    }
-
-    static Stream<Arguments> provideLastFiveHistories() {
-        return Stream.of(
-                Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0, 1000.0), 4500.0, true),
-                Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0, 1000.0), 5500.0, false),
-                Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0), 500.0, false)
-        );
-    }
-
     @ParameterizedTest
     @MethodSource("provideHistoryForLoan")
-    void testSubmitForLoan(List<Double> history, double loan, boolean expected) {
+    void testPersonalAccountSubmitForLoan(List<Double> history, double loan, boolean expected) {
         createBalanceAndHistory(history);
         assertEquals(expected, personalAccount.submitForLoan(loan));
     }
@@ -79,7 +44,10 @@ public class TestPersonalAccountLoan {
                 Arguments.of(List.of(1000.0, 1000.0, 1000.0, 1000.0, 1000.0), 4000.0, true),
                 Arguments.of(List.of(1000.0, 1000.0, -1000.0, 1000.0, 1000.0), 6000.0, false),
                 Arguments.of(List.of(1000.0, -1000.0, 1000.0, 1000.0, 1000.0), 6000.0, true),
-                Arguments.of(List.of(1000.0, 1000.0, 1000.0, -1000.0, 1000.0), 2500.0, true)
+                Arguments.of(List.of(1000.0, 1000.0, 1000.0, -1000.0, 1000.0), 2500.0, true),
+                Arguments.of(List.of(1000.0, 1000.0, 1000.0), 6000.0, true),
+                Arguments.of(List.of(1000.0, -1000.0, 1000.0), 6000.0, false)
+
         );
     }
 }

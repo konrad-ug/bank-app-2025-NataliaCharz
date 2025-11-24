@@ -11,4 +11,22 @@ public class CompanyAccount extends Account{
         return 5;
     }
 
+    @Override
+    public boolean submitForLoan(double loan) {
+        if (checkBalanceForLoan(loan) && checkZusTransfer()){
+            this.incomingTransfer(loan);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkBalanceForLoan(double loan){
+        return this.balance > loan * 2;
+    }
+
+    public boolean checkZusTransfer(){
+        return getHistory().contains(-1775.0);
+    }
+
 }
