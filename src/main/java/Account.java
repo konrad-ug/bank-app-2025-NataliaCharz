@@ -3,8 +3,8 @@ import java.util.List;
 
 public abstract class Account {
 
-    private final String name;
-    private final String identification;
+    protected final String name;
+    protected final String identification;
     protected double balance;
     private List<Double> history = new ArrayList<>();
 
@@ -14,6 +14,7 @@ public abstract class Account {
     }
 
     public abstract double chargeAccount();
+    public abstract boolean submitForLoan(double loan);
 
     public String getName() {
         return this.name;
@@ -72,5 +73,6 @@ public abstract class Account {
         double charge = -chargeAccount();
         this.history.add(charge);
     }
+
 
 }

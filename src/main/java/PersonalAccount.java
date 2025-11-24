@@ -2,7 +2,6 @@ import validator.PeselValidator;
 import validator.PromoCodeValidator;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class PersonalAccount extends Account {
 
@@ -26,8 +25,9 @@ public class PersonalAccount extends Account {
         return 1;
     }
 
+    @Override
     public boolean submitForLoan(double loan){
-        if (lastThreeTransactionsAreIncome() || lastFiveTransactionsMustBeLargerThanLoan(loan)){
+        if (checkLastThreeTransactionsAreIncome() || checkLastFiveTransactionsMustBeLargerThanLoan(loan)){
             this.incomingTransfer(loan);
             return true;
         } else {
@@ -35,7 +35,7 @@ public class PersonalAccount extends Account {
         }
     }
 
-    public boolean lastThreeTransactionsAreIncome(){
+    private boolean checkLastThreeTransactionsAreIncome(){
         List<Double> history = getHistory();
         for (int i = history.size() - 1; i > history.size() - 4; i--){
             if (history.get(i) < 0){
@@ -45,7 +45,7 @@ public class PersonalAccount extends Account {
         return true;
     }
 
-    public boolean lastFiveTransactionsMustBeLargerThanLoan(double loan){
+    private boolean checkLastFiveTransactionsMustBeLargerThanLoan(double loan){
         List<Double> history = getHistory();
         if (history.size() < 5){
             return false;
@@ -56,4 +56,28 @@ public class PersonalAccount extends Account {
         }
         return amount > loan;
     }
+
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (obj.getClass() != this.getClass()) {
+//            return false;
+//        }
+//        final PersonalAccount other = (PersonalAccount) obj;
+//        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+//            return false;
+//        }
+//        if ((this.surname == null) ? (other.surname != null) : !this.surname.equals(other.surname)) {
+//            return false;
+//        }
+//        if ((this.identification== null) ? (other.identification != null) : !this.identification.equals(other.identification)) {
+//            return false;
+//        }
+//        if ((this.promoCode == null) ? (other.promoCode != null) : !this.promoCode.equals(other.promoCode)) {
+//            return false;
+//        }
+//        return true;
+//    }
 }
