@@ -1,7 +1,9 @@
 package pl.bankapp.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 import pl.bankapp.entity.PersonalAccount;
+import pl.bankapp.entity.TransferRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,5 +59,19 @@ public class AccountsRegistry {
             account.setSurname(args[1]);
         }
         return account;
+    }
+
+    public void createTransfer(String pesel, TransferRequest transferRequest) {
+        if (transferRequest == null){
+            throw new IllegalArgumentException("Provide transfer request");
+        }
+        PersonalAccount foundAccount = findAccountByPesel(pesel);
+        double amount = transferRequest.getAmount();
+        switch (transferRequest.getType()){
+            case EXPRESS -> foundAccount.expressOutgoingTransfer(amount);
+            case INCOMING -> foundAccount.incomingTransfer(amount);
+            case OUTGOING -> foundAccount.outgoingTransfer(amount);
+            case null, default -> throw new IllegalArgumentException("Wrong type of transfer");
+        }
     }
 }

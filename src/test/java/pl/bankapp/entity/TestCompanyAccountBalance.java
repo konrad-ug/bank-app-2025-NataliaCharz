@@ -1,8 +1,9 @@
 package pl.bankapp.entity;
 
-import pl.bankapp.entity.CompanyAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pl.bankapp.exception.IncomingTransactionFailedException;
+import pl.bankapp.exception.OutgoingTransactionFailedException;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class TestCompanyAccountBalance {
     @Test
     public void testCompanyAccountThrowExceptionWhenInvalidAmountIncomingTransfer() {
         //given + when
-        Exception exception = assertThrows(NumberFormatException.class, () -> {
+        Exception exception = assertThrows(IncomingTransactionFailedException.class, () -> {
             companyAccount.incomingTransfer(-1000);
         });
         String expectedMessage = "Wrong value of incoming transfer.";
@@ -55,7 +56,7 @@ public class TestCompanyAccountBalance {
     @Test
     public void testCompanyAccountThrowExceptionWhenOutgoingTransferValueHigherThanBalance(){
         //given + when
-        Exception exception = assertThrows(NumberFormatException.class, () -> {
+        Exception exception = assertThrows(OutgoingTransactionFailedException.class, () -> {
             companyAccount.outgoingTransfer(1000);
         });
         String expectedMessage = "Balance is lower than outgo";
@@ -67,7 +68,7 @@ public class TestCompanyAccountBalance {
     @Test
     public void testCompanyAccountThrowExceptionWhenOutgoingTransferValueBelowZero(){
         //given + when
-        Exception exception = assertThrows(NumberFormatException.class, () -> {
+        Exception exception = assertThrows(OutgoingTransactionFailedException.class, () -> {
             companyAccount.outgoingTransfer(-1000);
         });
         String expectedMessage = "Wrong value of outgoing transfer.";

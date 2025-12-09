@@ -1,11 +1,14 @@
 package pl.bankapp.entity;
 
+import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
+import pl.bankapp.exception.IncomingTransactionFailedException;
+import pl.bankapp.exception.OutgoingTransactionFailedException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Setter
 public abstract class Account {
 
@@ -23,25 +26,9 @@ public abstract class Account {
 
     public abstract boolean submitForLoan(double loan);
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getIdentification() {
-        return this.identification;
-    }
-
-    public double getBalance() {
-        return this.balance;
-    }
-
-    public List<Double> getHistory() {
-        return this.history;
-    }
-
     public Double incomingTransfer(double income) {
         if (income < 0) {
-            throw new NumberFormatException("Wrong value of incoming transfer.");
+            throw new IncomingTransactionFailedException("Wrong value of incoming transfer.");
         }
         balance = getBalance() + income;
         updateHistoryWithIncomingTransfer(income);
@@ -50,10 +37,10 @@ public abstract class Account {
 
     public double outgoingTransfer(double outgo) {
         if (getBalance() < outgo) {
-            throw new NumberFormatException("Balance is lower than outgo");
+            throw new OutgoingTransactionFailedException("Balance is lower than outgo");
         }
         if (outgo < 0) {
-            throw new NumberFormatException("Wrong value of outgoing transfer.");
+            throw new OutgoingTransactionFailedException("Wrong value of outgoing transfer.");
         }
         balance = getBalance() - outgo;
         updateHistoryWithOutgoingTransfer(outgo);
