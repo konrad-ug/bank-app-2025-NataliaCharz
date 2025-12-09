@@ -12,12 +12,15 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import pl.bankapp.BankApplication;
 import pl.bankapp.entity.PersonalAccount;
+import pl.bankapp.entity.TransferRequest;
+import pl.bankapp.entity.TransferType;
 import pl.bankapp.service.AccountsRegistry;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pl.bankapp.controller.AccountController.ACCOUNT_URL;
@@ -39,6 +42,11 @@ public class TestAccountController {
     void setUp() {
         RestAssured.port = port;
         accountsRegistry.getAllAccounts().clear();
+        PersonalAccount person1 = new PersonalAccount("Natalia", "Charz", "12345678909");
+        PersonalAccount person2 = new PersonalAccount("Adam", "Małysz", "98657643212");
+        accountsRegistry.addAccount(person1);
+        accountsRegistry.addAccount(person2);
+        person1.incomingTransfer(150.0);
     }
 
     @Test
@@ -68,23 +76,14 @@ public class TestAccountController {
     }
 
     @Test
-    public void shouldReturnConflictWhenCreatingAccountWithAlreadyExistedPesel(){
+    public void shouldReturn409WhenCreatingAccountWithAlreadyExistedPesel(){
         //given
-        PersonalAccount request = new PersonalAccount("Adam", "Sandler", "12345678912");
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(request)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-        PersonalAccount request2 = new PersonalAccount("Wojtek", "Szczęsny", "12345678912");
+        PersonalAccount request = new PersonalAccount("Wojtek", "Szczęsny", "12345678909");
         //when
         RestAssured.given()
                 .header("Content-Type", "application/json")
                 .and()
-                .body(request2)
+                .body(request)
                 .when()
                 .post(ACCOUNT_URL)
                 .then()
@@ -93,26 +92,7 @@ public class TestAccountController {
 
     @Test
     public void shouldReturnAllAccounts(){
-        //given
-        PersonalAccount request1 = new PersonalAccount("Adam", "Sandler", "12345678912");
-        PersonalAccount request2 = new PersonalAccount("Adam", "Małysz", "98657643212");
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(request1)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(request2)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-        //when
+        //given + when
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
                 .and()
@@ -133,12 +113,14 @@ public class TestAccountController {
         List<String> pesels = accounts.stream()
                 .map(PersonalAccount::getIdentification)
                 .toList();
-        assertTrue(pesels.contains("12345678912"));
+        assertTrue(pesels.contains("12345678909"));
         assertTrue(pesels.contains("98657643212"));
     }
 
     @Test
     public void shouldReturnEmptyListWhenNothingInAccountRegistry(){
+        //given
+        accountsRegistry.getAllAccounts().clear();
         //when
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
@@ -159,6 +141,8 @@ public class TestAccountController {
 
     @Test
     public void shouldReturnZeroWhenNothingInAccountRegistry(){
+        //given
+        accountsRegistry.getAllAccounts().clear();
         //when
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
@@ -179,26 +163,7 @@ public class TestAccountController {
 
     @Test
     public void shouldReturnNumberOfAccountsIfListNotEmpty(){
-        //given
-        PersonalAccount request1 = new PersonalAccount("Adam", "Sandler", "12345678912");
-        PersonalAccount request2 = new PersonalAccount("Adam", "Małysz", "98657643212");
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(request1)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(request2)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-        //when
+        //given + when
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
                 .and()
@@ -219,14 +184,7 @@ public class TestAccountController {
     @Test
     public void shouldReturnAccountWhenValidPesel(){
         //given
-        PersonalAccount req = new PersonalAccount("Natalia", "Charz", "12345678909");
         String pesel = "12345678909";
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(req)
-                .when()
-                .post(ACCOUNT_URL);
         //when
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
@@ -250,17 +208,7 @@ public class TestAccountController {
     @Test
     public void shouldUpdatePersonalAccountWhenValidPesel(){
         //given
-        PersonalAccount req = new PersonalAccount("Natalia", "Charz", "12345678909");
         PersonalAccount toChange = new PersonalAccount("Ania", "Charz", "12345678909");
-
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(req)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
         // when
         Response response = RestAssured.given()
                 .header("Content-Type", "application/json")
@@ -286,17 +234,7 @@ public class TestAccountController {
     @Test
     public void shouldNotUpdatePersonalAccountWhenInValidPesel(){
         //given
-        PersonalAccount req = new PersonalAccount("Natalia", "Charz", "12345678909");
         PersonalAccount toChange = new PersonalAccount("Ania", "Charz", "12344678909");
-
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(req)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
         // when + then
        RestAssured.given()
                 .header("Content-Type", "application/json")
@@ -306,21 +244,11 @@ public class TestAccountController {
                 .put(ACCOUNT_URL + "/" + toChange.getIdentification())
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value());
-
     }
 
     @Test
-    public void shouldReturnNotFoundWhenInvalidPesel(){
+    public void shouldReturn404WhenInvalidPesel(){
         //given
-        PersonalAccount req = new PersonalAccount("Natalia", "Charz", "12345678909");
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(req)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
         String pesel = "84620192781";
         //when
         RestAssured.given()
@@ -334,18 +262,9 @@ public class TestAccountController {
     }
 
     @Test
-    public void shouldDeletePersonalAccountIfPeselExistsInAccountRegistry(){
+    public void shouldDeletePersonalAccountIfPeselExists(){
         //given
-        PersonalAccount request = new PersonalAccount("Adam", "Sandler", "12345678912");
-        String expected = "12345678912";
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(request)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
+        String expected = "12345678909";
         //when && then
         RestAssured.given()
                 .when()
@@ -357,16 +276,7 @@ public class TestAccountController {
     @Test
     public void shouldNotDeletePersonalAccountIfPeselInvalid(){
         //given
-        PersonalAccount request = new PersonalAccount("Adam", "Sandler", "12345678912");
         String expected = "11111111111";
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(request)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
         //when && then
         RestAssured.given()
                 .when()
@@ -378,16 +288,6 @@ public class TestAccountController {
     @Test
     public void shouldPartialUpdateNameWhenOneArgProvided() {
         // given
-        PersonalAccount req = new PersonalAccount("Natalia", "Charz", "12345678909");
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(req)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-
         String pesel = "12345678909";
         String[] args = new String[] { "Ania" };
         String body;
@@ -423,16 +323,6 @@ public class TestAccountController {
     @Test
     public void shouldPartialUpdateSurnameWhenSecondArgProvided() {
         // given
-        PersonalAccount req = new PersonalAccount("Natalia", "Charz", "12345678909");
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(req)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-
         String pesel = "12345678909";
         Object[] args = new Object[] { null, "Nowak" };
         String body;
@@ -468,16 +358,6 @@ public class TestAccountController {
     @Test
     public void shouldPartialUpdateBothNameAndSurnameWhenTwoArgsProvided() {
         // given
-        PersonalAccount req = new PersonalAccount("Natalia", "Charz", "12345678909");
-        RestAssured.given()
-                .header("Content-Type", "application/json")
-                .and()
-                .body(req)
-                .when()
-                .post(ACCOUNT_URL)
-                .then()
-                .extract().response();
-
         String pesel = "12345678909";
         String[] args = new String[] { "Kasia", "Kowalska" };
         String body;
@@ -511,7 +391,7 @@ public class TestAccountController {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenPatchingNonExistingPesel() {
+    public void shouldReturn404WhenPatchingNonExistingPesel() {
         // given
         String pesel = "00000000000";
         String[] args = new String[] { "X" };
@@ -533,4 +413,124 @@ public class TestAccountController {
                 .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
+    @Test
+    public void shouldReturn200WhenIncomingTransferSucceeds(){
+        //given
+        String pesel = "12345678909";
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.INCOMING);
+        //when + then
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void shouldReturn200WhenOutgoingTransferSucceeds(){
+        //given
+        String pesel = "12345678909";
+        TransferRequest transferRequest = new TransferRequest(10.0, TransferType.OUTGOING);
+        //when + then
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void shouldReturn200WhenExpressTransferSucceeds(){
+        //given
+        String pesel = "12345678909";
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.EXPRESS);
+        //when + then
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    public void shouldReturnCorrectSuccessMessageOnSuccessfulTransfer(){
+        //given
+        String pesel = "12345678909";
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.INCOMING);
+        //when
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(equalTo("The order has been accepted for execution"));
+    }
+
+    @Test
+    public void shouldReturn404WhenAccountDoesNotExist(){
+        //given
+        String pesel = "99999999999";
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.EXPRESS);
+        //when + then
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void shouldReturn400WhenTransferTypeIsNull(){
+        //given
+        String pesel = "12345678909";
+        TransferRequest transferRequest = new TransferRequest(100.0, null);
+        //when + then
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    public void shouldReturn400WhenAmountIsNegative(){
+        //given
+        String pesel = "12345678909";
+        TransferRequest transferRequest = new TransferRequest(-100.0, TransferType.OUTGOING);
+        //when + then
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
+    @Test
+    public void shouldThrowRuntimeExceptionWhenUnexpectedErrorOccurs(){
+        //given
+        String pesel = "12345678909";
+        TransferRequest transferRequest = new TransferRequest(-100.0, TransferType.INCOMING);
+        //when + then
+        RestAssured.given()
+                .header("Content-Type", "application/json")
+                .body(transferRequest)
+                .when()
+                .post(ACCOUNT_URL + "/" + pesel + "/transfer")
+                .then()
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

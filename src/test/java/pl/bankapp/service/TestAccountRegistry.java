@@ -3,6 +3,9 @@ package pl.bankapp.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.bankapp.entity.PersonalAccount;
+import pl.bankapp.entity.TransferRequest;
+import pl.bankapp.entity.TransferType;
+import pl.bankapp.exception.IncomingTransactionFailedException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -140,5 +143,104 @@ public class TestAccountRegistry {
         //then
         assertEquals("John", updated.getName());
         assertEquals("Doe", updated.getSurname());
+    }
+
+    @Test
+    public void shouldCreateIncomingTransferWhenAccountExists(){
+        //given
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.INCOMING);
+        String pesel = "12345678905";
+        //when
+        registry.createTransfer(pesel, transferRequest);
+        double expected = 100.0;
+        double actual = registry.findAccountByPesel(pesel).getBalance();
+        //then
+        assertEquals(expected, actual);
+    }
+    @Test
+    public void shouldCreateOutgoingTransferWhenAccountExists(){
+        //given
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.OUTGOING);
+        String pesel = "12345678905";
+        registry.findAccountByPesel(pesel).incomingTransfer(150.0);
+        //when
+        registry.createTransfer(pesel, transferRequest);
+        double expected = 50.0;
+        double actual = registry.findAccountByPesel(pesel).getBalance();
+        //then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldCreateExpressTransferWhenAccountExists(){
+        //given
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.EXPRESS);
+        String pesel = "12345678905";
+        registry.findAccountByPesel(pesel).incomingTransfer(150.0);
+        //when
+        registry.createTransfer(pesel, transferRequest);
+        double expected = 49.0;
+        double actual = registry.findAccountByPesel(pesel).getBalance();
+        //then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldThrowWhenAccountDoesNotExist(){
+        //given
+        TransferRequest transferRequest = new TransferRequest(100.0, TransferType.EXPRESS);
+        String pesel = "99999999999";
+        Exception exception = assertThrows(NoSuchElementException.class, () -> {
+            registry.createTransfer(pesel, transferRequest);
+        });
+        //when
+        String expected = "No Account with provided pesel: " + pesel;
+        String actual = exception.getMessage();
+        //then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldThrowWhenTransferTypeIsNull(){
+        //given
+        TransferRequest transferRequest = new TransferRequest(100.0,null);
+        String pesel = "12345678905";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            registry.createTransfer(pesel, transferRequest);
+        });
+        //when
+        String expected = "Wrong type of transfer";
+        String actual = exception.getMessage();
+        //then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldThrowWhenAmountIsNegative(){
+        //given
+        TransferRequest transferRequest = new TransferRequest(-100.0, TransferType.INCOMING);
+        String pesel = "12345678905";
+        Exception exception = assertThrows(IncomingTransactionFailedException.class, () -> {
+            registry.createTransfer(pesel, transferRequest);
+        });
+        //when
+        String expected = "Wrong value of incoming transfer.";
+        String actual = exception.getMessage();
+        //then
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldThrowWhenTransferRequestIsNull(){
+        TransferRequest transferRequest = null;
+        String pesel = "12345678905";
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            registry.createTransfer(pesel, transferRequest);
+        });
+        //when
+        String expected = "Provide transfer request";
+        String actual = exception.getMessage();
+        //then
+        assertEquals(expected, actual);
     }
 }
