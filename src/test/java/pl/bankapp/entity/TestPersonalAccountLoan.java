@@ -1,5 +1,7 @@
+package pl.bankapp.entity;
+
+import pl.bankapp.entity.PersonalAccount;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,7 +20,7 @@ public class TestPersonalAccountLoan {
         String name = "John";
         String surname = "Doe";
         String pesel = "87321930271";
-        personalAccount = new PersonalAccount(name, surname, pesel, null);
+        personalAccount = new PersonalAccount(name, surname, pesel);
     }
 
     private void createBalanceAndHistory(List<Double> amounts) {

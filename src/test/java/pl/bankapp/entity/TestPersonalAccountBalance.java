@@ -1,3 +1,5 @@
+package pl.bankapp.entity;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +16,7 @@ public class TestPersonalAccountBalance {
         String name = "John";
         String surname = "Doe";
         String pesel = "87321930271";
-        personalAccount = new PersonalAccount(name, surname, pesel, null);
+        personalAccount = new PersonalAccount(name, surname, pesel);
     }
 
     @Test

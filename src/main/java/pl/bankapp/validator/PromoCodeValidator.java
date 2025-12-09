@@ -1,4 +1,4 @@
-package validator;
+package pl.bankapp.validator;
 
 import java.util.regex.Pattern;
 
