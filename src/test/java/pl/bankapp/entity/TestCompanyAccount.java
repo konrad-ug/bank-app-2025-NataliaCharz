@@ -1,5 +1,8 @@
+package pl.bankapp.entity;
+
+import pl.bankapp.entity.CompanyAccount;
 import org.junit.jupiter.api.Test;
-import validator.NipValidator;
+import pl.bankapp.validator.NipValidator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,7 +14,7 @@ public class TestCompanyAccount {
 //    public void setUp(){
 //        String companyName = "ABC";
 //        String nip = "123456789012";
-//        companyAccount = new CompanyAccount(companyName, nip);
+//        companyAccount = new entities.CompanyAccount(companyName, nip);
 //    }
 
     @Test

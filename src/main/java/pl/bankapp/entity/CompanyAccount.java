@@ -1,8 +1,10 @@
-import validator.NipValidator;
+package pl.bankapp.entity;
+
+import pl.bankapp.validator.NipValidator;
 
 public class CompanyAccount extends Account{
 
-    CompanyAccount(String companyName, String nip){
+    public CompanyAccount(String companyName, String nip){
         super(companyName, NipValidator.validateNip(nip));
     }
 

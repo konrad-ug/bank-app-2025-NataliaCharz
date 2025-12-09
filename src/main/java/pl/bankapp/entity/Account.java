@@ -1,19 +1,26 @@
+package pl.bankapp.entity;
+
+import lombok.Setter;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
 public abstract class Account {
 
-    protected final String name;
+    protected String name;
     protected final String identification;
     protected double balance;
     private List<Double> history = new ArrayList<>();
 
-    Account(String name, String identification) {
+    public Account(String name, String identification) {
         this.name = name;
         this.identification = identification;
     }
 
     public abstract double chargeAccount();
+
     public abstract boolean submitForLoan(double loan);
 
     public String getName() {
@@ -28,7 +35,7 @@ public abstract class Account {
         return this.balance;
     }
 
-    public List<Double> getHistory(){
+    public List<Double> getHistory() {
         return this.history;
     }
 
@@ -60,16 +67,16 @@ public abstract class Account {
         return this.balance;
     }
 
-    public void updateHistoryWithIncomingTransfer(double data){
+    public void updateHistoryWithIncomingTransfer(double data) {
         this.history.add(data);
     }
 
-    public void updateHistoryWithOutgoingTransfer(double data){
+    public void updateHistoryWithOutgoingTransfer(double data) {
         double amount = -data;
         this.history.add(amount);
     }
 
-    public void updateHistoryWithExpressOutgoingTransfer(){
+    public void updateHistoryWithExpressOutgoingTransfer() {
         double charge = -chargeAccount();
         this.history.add(charge);
     }

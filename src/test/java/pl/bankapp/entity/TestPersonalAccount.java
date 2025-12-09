@@ -1,3 +1,6 @@
+package pl.bankapp.entity;
+
+import pl.bankapp.entity.PersonalAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +18,7 @@ public class TestPersonalAccount {
         personalAccount = new PersonalAccount(
                 name,
                 surname,
-                "12345678901",
-                null);
+                "12345678901");
     }
 
     @Test
@@ -47,7 +49,7 @@ public class TestPersonalAccount {
         String surname = "Doe";
         String pesel = "123";
         //when
-        PersonalAccount account = new PersonalAccount(name, surname, pesel, null);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel);
         //then
         assertEquals("Invalid", account.getIdentification());
     }
@@ -59,7 +61,7 @@ public class TestPersonalAccount {
         String surname = "Doe";
         String pesel = "John";
         //when
-        PersonalAccount account = new PersonalAccount(name, surname, pesel, null);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel);
         //then
         assertEquals("Invalid", account.getIdentification());
     }
@@ -70,7 +72,7 @@ public class TestPersonalAccount {
         String name = "John";
         String surname = "Doe";
         //when
-        PersonalAccount account = new PersonalAccount(name, surname, null, null);
+        PersonalAccount account = new PersonalAccount(name, surname, null);
         //then
         assertEquals("Invalid", account.getIdentification());
     }
@@ -83,7 +85,8 @@ public class TestPersonalAccount {
         String pesel = "73345678901";
         String promoCode = "PROMO_123";
         //when
-        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel);
+        account.usePromoCode(promoCode);
         //then
         assertEquals(50.0, account.getBalance());
     }
@@ -96,7 +99,8 @@ public class TestPersonalAccount {
         String pesel = "73345678901";
         String promoCode = "incorrect";
         //when
-        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel);
+        account.usePromoCode(promoCode);
         //then
         assertEquals(0.0, account.getBalance());
     }
@@ -109,7 +113,8 @@ public class TestPersonalAccount {
         String pesel = "19345678901";
         String promoCode = "PROMO_123";
         //when
-        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel);
+        account.usePromoCode(promoCode);
         //then
         assertEquals(0.0, account.getBalance());
     }
@@ -122,8 +127,26 @@ public class TestPersonalAccount {
         String pesel = "73345678901";
         String promoCode = "PROMO_1233";
         //when
-        PersonalAccount account = new PersonalAccount(name, surname, pesel, promoCode);
+        PersonalAccount account = new PersonalAccount(name, surname, pesel);
+        account.usePromoCode(promoCode);
         //then
         assertEquals(0, account.getBalance());
     }
+
+    @Test
+    public void testPromoCodeNullBalanceNotChanged() {
+        //given
+        String name = "John";
+        String surname = "Doe";
+        String pesel = "73345678901";
+        String promoCode = null;
+
+        //when
+        PersonalAccount account = new PersonalAccount(name, surname, pesel);
+        account.usePromoCode(promoCode);
+
+        //then
+        assertEquals(0.0, account.getBalance());
+    }
+
 }
