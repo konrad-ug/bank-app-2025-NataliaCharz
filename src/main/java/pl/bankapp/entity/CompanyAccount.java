@@ -2,11 +2,19 @@ package pl.bankapp.entity;
 
 import pl.bankapp.validator.NipValidator;
 
+import javax.annotation.processing.Generated;
+
+@Generated({})
 public class CompanyAccount extends Account{
 
-    public CompanyAccount(String companyName, String nip){
-        super(companyName, NipValidator.validateNip(nip));
+    public CompanyAccount(String companyName, String nip) {
+        super(companyName, nip);
+        if (!NipValidator.isNipValid(nip)) {
+            throw new IllegalArgumentException("Company not registered.");
+        }
+        this.identification = nip;
     }
+
 
     @Override
     public double chargeAccount() {
