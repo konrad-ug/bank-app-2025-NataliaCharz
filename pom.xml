@@ -75,6 +75,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/BankApplication.class</exclude>
+<!--                        <exclude>**/CompanyAccount.class</exclude>-->
                     </excludes>
                 </configuration>
                 <executions>

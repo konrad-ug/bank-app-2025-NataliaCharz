@@ -39,7 +39,7 @@ public abstract class Account {
         if (getBalance() < outgo) {
             throw new OutgoingTransactionFailedException("Balance is lower than outgo");
         }
-        if (outgo < 0) {
+        if (outgo <= 0) {
             throw new OutgoingTransactionFailedException("Wrong value of outgoing transfer.");
         }
         balance = getBalance() - outgo;

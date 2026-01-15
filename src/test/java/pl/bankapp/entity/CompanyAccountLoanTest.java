@@ -1,6 +1,5 @@
 package pl.bankapp.entity;
 
-import pl.bankapp.entity.CompanyAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,7 +10,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestCompanyAccountLoan {
+public class CompanyAccountLoanTest {
 
     private CompanyAccount companyAccount;
 
