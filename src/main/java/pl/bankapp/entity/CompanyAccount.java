@@ -6,6 +6,13 @@ public class CompanyAccount extends Account{
 
     public CompanyAccount(String companyName, String nip){
         super(companyName, NipValidator.validateNip(nip));
+        if (nip == null){
+            throw new IllegalArgumentException("NIP is invalid");
+        } else if (!NipValidator.isNipActiveInMf(nip)){
+            throw new IllegalArgumentException("NIP is not active in MF");
+        } else {
+            this.identification = nip;
+        }
     }
 
     @Override

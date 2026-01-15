@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class Account {
 
     protected String name;
-    protected final String identification;
+    protected String identification;
     protected double balance;
     private List<Double> history = new ArrayList<>();
 
