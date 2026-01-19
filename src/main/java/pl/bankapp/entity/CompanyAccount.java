@@ -9,12 +9,9 @@ public class CompanyAccount extends Account{
 
     public CompanyAccount(String companyName, String nip) {
         super(companyName, nip);
-        if (!NipValidator.isNipValid(nip)) {
-            throw new IllegalArgumentException("Company not registered.");
-        }
+        NipValidator.validateNipOrThrow(nip);
         this.identification = nip;
     }
-
 
     @Override
     public double chargeAccount() {

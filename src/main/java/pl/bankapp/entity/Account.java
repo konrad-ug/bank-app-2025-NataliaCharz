@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import pl.bankapp.exception.IncomingTransactionFailedException;
 import pl.bankapp.exception.OutgoingTransactionFailedException;
+import pl.bankapp.service.SMTPClient;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,5 +70,18 @@ public abstract class Account {
         this.history.add(charge);
     }
 
+    public boolean sendHistoryViaEmail(String email) {
+        SMTPClient smtpClient = new SMTPClient();
+        String subject = "Account Transfer History " + LocalDate.now();
+        StringBuilder text = new StringBuilder();
+        if (this instanceof PersonalAccount) {
+            text.append("Personal account history: ").append(getHistory());
+        } else if (this instanceof CompanyAccount) {
+            text.append("Company account history: ").append(getHistory());
+        } else {
+            text.append("Account history: ").append(getHistory());
+        }
+        return smtpClient.send(subject, text.toString(), email);
+    }
 
 }

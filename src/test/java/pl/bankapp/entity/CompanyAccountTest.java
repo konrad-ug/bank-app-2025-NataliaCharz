@@ -24,31 +24,31 @@ public class CompanyAccountTest {
     static Stream<String> invalidNips() {
         return Stream.of(
                 "123",
-                "123456789012345",
+                "12345678901123321",
                 "ABC123XYZ",
                 null
         );
     }
 
     @Test
-    void shouldThrowExceptionWhenNipNotRegisteredInMf() {
+    void shouldThrowExceptionWhenNipNotActiveInMf() {
         try (MockedStatic<NipValidator> mocked = mockStatic(NipValidator.class)) {
-            mocked.when(() -> NipValidator.isNipValid("1234567890"))
-                    .thenReturn(false);
-            IllegalArgumentException exception = assertThrows(
+            mocked.when(() -> NipValidator.validateNipOrThrow("1234567890"))
+                    .thenThrow(new IllegalArgumentException("Company not registered."));
+
+            IllegalArgumentException ex = assertThrows(
                     IllegalArgumentException.class,
                     () -> new CompanyAccount("ABC", "1234567890")
             );
-
-            assertEquals("Company not registered.", exception.getMessage());
+            assertEquals("Company not registered.", ex.getMessage());
         }
     }
 
     @Test
     void shouldCreateAccountWhenNipIsValidAndActive() {
         try (MockedStatic<NipValidator> mocked = mockStatic(NipValidator.class)) {
-            mocked.when(() -> NipValidator.isNipValid("8461627563"))
-                    .thenReturn(true);
+            mocked.when(() -> NipValidator.validateNipOrThrow("8461627563"))
+                    .thenAnswer(invocation -> null);
             CompanyAccount account = new CompanyAccount("ABC", "8461627563");
             assertNotNull(account);
         }
