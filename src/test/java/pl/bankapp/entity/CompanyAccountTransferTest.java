@@ -26,9 +26,9 @@ public class CompanyAccountTransferTest {
     @BeforeEach
     void setUp() {
         MockedStatic<NipValidator> mocked = mockStatic(NipValidator.class);
-        mocked.when(() -> NipValidator.isNipValid(anyString())).thenReturn(true);
+        mocked.when(() -> NipValidator.validateNipOrThrow(anyString())).thenAnswer(invocation -> null);
         this.mockedValidator = mocked;
-        companyAccount = new CompanyAccount("Alfa", "1234567890");
+        companyAccount = new CompanyAccount("ABC", "1234567890");
     }
 
     @AfterEach
@@ -112,20 +112,20 @@ public class CompanyAccountTransferTest {
         assertEquals(expectedHistory, companyAccount.getHistory());
     }
 
-    static Stream<org.junit.jupiter.params.provider.Arguments> provideTransferSequences() {
+    static Stream<Arguments> provideTransferSequences() {
         return Stream.of(
-                org.junit.jupiter.params.provider.Arguments.of(
+                Arguments.of(
                         List.of(new Transfer("INCOMING", 1000.0)),
                         List.of(1000.0)
                 ),
-                org.junit.jupiter.params.provider.Arguments.of(
+                Arguments.of(
                         List.of(
                                 new Transfer("INCOMING", 2000.0),
                                 new Transfer("OUTGOING", 1000.0)
                         ),
                         List.of(2000.0, -1000.0)
                 ),
-                org.junit.jupiter.params.provider.Arguments.of(
+                Arguments.of(
                         List.of(
                                 new Transfer("INCOMING", 2000.0),
                                 new Transfer("OUTGOING", 1000.0),
