@@ -70,8 +70,7 @@ public abstract class Account {
         this.history.add(charge);
     }
 
-    public boolean sendHistoryViaEmail(String email) {
-        SMTPClient smtpClient = new SMTPClient();
+    public boolean sendHistoryViaEmail(String email, SMTPClient client) {
         String subject = "Account Transfer History " + LocalDate.now();
         StringBuilder text = new StringBuilder();
         if (this instanceof PersonalAccount) {
@@ -81,7 +80,7 @@ public abstract class Account {
         } else {
             text.append("Account history: ").append(getHistory());
         }
-        return smtpClient.send(subject, text.toString(), email);
+        return client.send(subject, text.toString(), email);
     }
 
 }

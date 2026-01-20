@@ -1,15 +1,16 @@
 package pl.bankapp.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
+import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.entity.PersonalAccount;
-import pl.bankapp.entity.TransferRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
 public class AccountsRegistry {
     private List<PersonalAccount> accounts = new ArrayList<>();
 
@@ -61,13 +62,13 @@ public class AccountsRegistry {
         return account;
     }
 
-    public void createTransfer(String pesel, TransferRequest transferRequest) {
-        if (transferRequest == null){
+    public void createTransfer(String pesel, TransferDTO transferDTO) {
+        if (transferDTO == null) {
             throw new IllegalArgumentException("Provide transfer request");
         }
         PersonalAccount foundAccount = findAccountByPesel(pesel);
-        double amount = transferRequest.getAmount();
-        switch (transferRequest.getType()){
+        double amount = transferDTO.getAmount();
+        switch (transferDTO.getType()) {
             case EXPRESS -> foundAccount.expressOutgoingTransfer(amount);
             case INCOMING -> foundAccount.incomingTransfer(amount);
             case OUTGOING -> foundAccount.outgoingTransfer(amount);
