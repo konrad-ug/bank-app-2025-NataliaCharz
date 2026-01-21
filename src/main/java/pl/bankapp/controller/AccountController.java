@@ -64,7 +64,7 @@ public class AccountController {
     public PersonalAccountDTO getPersonalAccountByPesel(@PathVariable String pesel) {
         try {
             return personalAccountMapper.personalAccountToDTO(accountsRegistry.findAccountByPesel(pesel));
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
@@ -84,7 +84,7 @@ public class AccountController {
     public void partialUpdatePersonalAccount(@PathVariable String pesel, @RequestBody PersonalAccountPartialUpdateDTO partialUpdateDTO) {
         try {
             accountsRegistry.partialUpdatePersonalAccount(pesel, partialUpdateDTO);
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
