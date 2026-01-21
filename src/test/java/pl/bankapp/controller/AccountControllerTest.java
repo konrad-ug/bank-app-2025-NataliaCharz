@@ -57,7 +57,8 @@ public class AccountControllerTest {
         return Stream.of(
                 Arguments.of(new PersonalAccountDTO("John", "Doe", "11223344556"), HttpStatus.CREATED),
                 Arguments.of(new PersonalAccountDTO("Alice", "Johnson", "99887766554"), HttpStatus.CREATED),
-                Arguments.of(new PersonalAccountDTO("Bob", "Brown", "12345678909"), HttpStatus.CONFLICT)
+                Arguments.of(new PersonalAccountDTO("Bob", "Brown", "12345678909"), HttpStatus.CONFLICT),
+                Arguments.of(new PersonalAccountDTO("Alan", "Smith", null), HttpStatus.BAD_REQUEST)
         );
     }
     @ParameterizedTest

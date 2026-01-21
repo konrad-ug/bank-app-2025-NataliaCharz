@@ -75,10 +75,8 @@ public abstract class Account {
         StringBuilder text = new StringBuilder();
         if (this instanceof PersonalAccount) {
             text.append("Personal account history: ").append(getHistory());
-        } else if (this instanceof CompanyAccount) {
+        } else  {
             text.append("Company account history: ").append(getHistory());
-        } else {
-            text.append("Account history: ").append(getHistory());
         }
         return client.send(subject, text.toString(), email);
     }
