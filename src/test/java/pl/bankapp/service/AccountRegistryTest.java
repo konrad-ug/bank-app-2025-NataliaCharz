@@ -1,10 +1,12 @@
 package pl.bankapp.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.entity.PersonalAccount;
 import pl.bankapp.entity.TransferType;
@@ -19,11 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("unit")
 public class AccountRegistryTest {
 
-    @Mock
-    private PersonalAccountMapper personalAccountMapper;
-
-    @InjectMocks
-    private AccountsRegistry registry;
+    private AccountsRegistry registry = new AccountsRegistry();
 
     @BeforeEach
     public void setUp() {
@@ -37,6 +35,11 @@ public class AccountRegistryTest {
         registry.addAccount(a3);
         registry.addAccount(a4);
         registry.addAccount(a5);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        registry = new AccountsRegistry();
     }
 
     @Test

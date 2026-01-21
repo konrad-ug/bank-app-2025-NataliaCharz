@@ -1,9 +1,8 @@
 name: API Performance Tests
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ 'main' ]
+    branches: [ '*' ]
   pull_request:
     branches: [ 'main' ]
 
