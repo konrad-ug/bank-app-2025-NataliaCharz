@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag("unit")
-public class TestPersonalAccountLoan {
+public class PersonalAccountLoanTest {
 
     private PersonalAccount personalAccount;
 

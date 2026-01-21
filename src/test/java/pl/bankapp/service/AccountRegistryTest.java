@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestAccountRegistry {
+public class AccountRegistryTest {
 
     @Mock
     private PersonalAccountMapper personalAccountMapper;

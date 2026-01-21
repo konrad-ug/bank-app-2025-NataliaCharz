@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("unit")
-public class TestPersonalAccountBalance {
+public class PersonalAccountBalanceTest {
 
     private PersonalAccount personalAccount;
 
