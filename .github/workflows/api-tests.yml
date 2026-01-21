@@ -9,7 +9,7 @@ on:
 jobs:
   api-test:
     runs-on: ubuntu-latest
-    services:
+#    services:
     # db:
     #   image: postgres:15
     #   env:
