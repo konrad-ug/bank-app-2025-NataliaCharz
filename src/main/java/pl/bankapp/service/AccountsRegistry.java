@@ -2,6 +2,7 @@ package pl.bankapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.bankapp.dto.PersonalAccountPartialUpdateDTO;
 import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.entity.PersonalAccount;
 
@@ -51,13 +52,13 @@ public class AccountsRegistry {
         return foundAccount;
     }
 
-    public PersonalAccount partialUpdatePersonalAccount(String pesel, String... args) {
+    public PersonalAccount partialUpdatePersonalAccount(String pesel, PersonalAccountPartialUpdateDTO updateDTO) {
         PersonalAccount account = findAccountByPesel(pesel);
-        if (args.length > 0 && args[0] != null) {
-            account.setName(args[0]);
+        if (updateDTO.getName() != null) {
+            account.setName(updateDTO.getName());
         }
-        if (args.length > 1 && args[1] != null) {
-            account.setSurname(args[1]);
+        if (updateDTO.getSurname() != null) {
+            account.setSurname(updateDTO.getSurname());
         }
         return account;
     }

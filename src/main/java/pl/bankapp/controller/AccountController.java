@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.bankapp.dto.PersonalAccountDTO;
+import pl.bankapp.dto.PersonalAccountPartialUpdateDTO;
 import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.exception.OutgoingTransactionFailedException;
 import pl.bankapp.mapper.PersonalAccountMapper;
@@ -80,9 +81,9 @@ public class AccountController {
 
     @PatchMapping("/{pesel}")
     @ResponseStatus(HttpStatus.OK)
-    public void partialUpdatePersonalAccount(@PathVariable String pesel, @RequestBody String... args) {
+    public void partialUpdatePersonalAccount(@PathVariable String pesel, @RequestBody PersonalAccountPartialUpdateDTO partialUpdateDTO) {
         try {
-            accountsRegistry.partialUpdatePersonalAccount(pesel, args);
+            accountsRegistry.partialUpdatePersonalAccount(pesel, partialUpdateDTO);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
