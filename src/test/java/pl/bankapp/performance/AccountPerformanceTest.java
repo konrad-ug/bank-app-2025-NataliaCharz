@@ -1,5 +1,6 @@
-package pl.bankapp.perf;
+package pl.bankapp.performance;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("performance")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class AccountPerformanceTest {
@@ -94,5 +96,6 @@ public class AccountPerformanceTest {
         );
         assertNotNull(Objects.requireNonNull(finalAccount.getBody()).pesel);
         assertEquals(pesel, finalAccount.getBody().pesel);
+        assertEquals(totalAmount, finalAccount.getBody().getBalance(), 0.01);
     }
 }

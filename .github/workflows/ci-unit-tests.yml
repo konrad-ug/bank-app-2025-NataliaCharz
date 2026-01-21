@@ -34,7 +34,7 @@ jobs:
           mvn -v
 
       - name: Run Maven (clean verify) and generate JaCoCo report
-        run: mvn -B -U clean verify
+        run: mvn clean verify -DincludeTags=unit
 
       - name: Upload JaCoCo HTML report (artifact)
         if: always()
