@@ -5,17 +5,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import pl.bankapp.entity.PersonalAccount;
-import pl.bankapp.entity.TransferRequest;
-import pl.bankapp.exception.IncomingTransactionFailedException;
+import pl.bankapp.dto.PersonalAccountDTO;
+import pl.bankapp.dto.PersonalAccountPartialUpdateDTO;
+import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.exception.OutgoingTransactionFailedException;
+import pl.bankapp.mapper.PersonalAccountMapper;
 import pl.bankapp.service.AccountsRegistry;
+import pl.bankapp.validator.PeselValidator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import static org.springframework.http.ResponseEntity.ok;
+import static java.util.stream.Collectors.toList;
 import static pl.bankapp.controller.AccountController.ACCOUNT_URL;
 
 
@@ -27,21 +29,30 @@ public class AccountController {
     public final static String ACCOUNT_URL = "/api/accounts";
 
     private final AccountsRegistry accountsRegistry;
+    private final PersonalAccountMapper personalAccountMapper;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public PersonalAccount createPersonalAccount(@RequestBody PersonalAccount personalAccount) {
+    public void createPersonalAccount(@RequestBody PersonalAccountDTO personalAccount) {
         try {
-            accountsRegistry.addAccount(personalAccount);
-            return personalAccount;
+            PeselValidator.validatePesel(personalAccount.getPesel());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            accountsRegistry.addAccount(personalAccountMapper.dtoToPersonalAccount(personalAccount));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
     }
 
     @GetMapping
-    public List<PersonalAccount> getAllPersonalAccounts() {
-        return accountsRegistry.getAllAccounts();
+    public List<PersonalAccountDTO> getAllPersonalAccounts() {
+        return accountsRegistry.getAllAccounts()
+                .stream()
+                .map(personalAccountMapper::personalAccountToDTO)
+                .collect(toList());
     }
 
     @GetMapping("/count")
@@ -50,19 +61,19 @@ public class AccountController {
     }
 
     @GetMapping("/{pesel}")
-    public PersonalAccount getPersonalAccountByPesel(@PathVariable String pesel) {
+    public PersonalAccountDTO getPersonalAccountByPesel(@PathVariable String pesel) {
         try {
-            return accountsRegistry.findAccountByPesel(pesel);
-        } catch (Exception e) {
+            return personalAccountMapper.personalAccountToDTO(accountsRegistry.findAccountByPesel(pesel));
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("/{pesel}")
     @ResponseStatus(HttpStatus.OK)
-    public PersonalAccount updatePersonalAccount(@PathVariable String pesel, @RequestBody PersonalAccount personalAccount) {
+    public void updatePersonalAccount(@PathVariable String pesel, @RequestBody PersonalAccountDTO personalAccount) {
         try {
-            return accountsRegistry.updatePersonalAccount(pesel, personalAccount);
+            accountsRegistry.updatePersonalAccount(pesel, personalAccountMapper.dtoToPersonalAccount(personalAccount));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -70,27 +81,26 @@ public class AccountController {
 
     @PatchMapping("/{pesel}")
     @ResponseStatus(HttpStatus.OK)
-    public PersonalAccount partialUpdatePersonalAccount(@PathVariable String pesel, @RequestBody String... args) {
+    public void partialUpdatePersonalAccount(@PathVariable String pesel, @RequestBody PersonalAccountPartialUpdateDTO partialUpdateDTO) {
         try {
-            return accountsRegistry.partialUpdatePersonalAccount(pesel, args);
-        } catch (Exception e) {
+            accountsRegistry.partialUpdatePersonalAccount(pesel, partialUpdateDTO);
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{pesel}")
-    public ResponseEntity<Void> deletePersonalAccount(@PathVariable String pesel) {
+    public void deletePersonalAccount(@PathVariable String pesel) {
         boolean deleted = accountsRegistry.deleteAccount(pesel);
         if (!deleted) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return ok().build();
     }
 
     @PostMapping("/{pesel}/transfer")
-    public ResponseEntity<String> createTransferForPersonalAccount(@PathVariable String pesel, @RequestBody TransferRequest transferRequest) {
+    public ResponseEntity<String> createTransferForPersonalAccount(@PathVariable String pesel, @RequestBody TransferDTO transferDTO) {
         try {
-            accountsRegistry.createTransfer(pesel, transferRequest);
+            accountsRegistry.createTransfer(pesel, transferDTO);
             return ResponseEntity.ok("The order has been accepted for execution");
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -98,8 +108,6 @@ public class AccountController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         } catch (OutgoingTransactionFailedException e) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
-        } catch (Exception e) {
-            throw new RuntimeException();
         }
     }
 }

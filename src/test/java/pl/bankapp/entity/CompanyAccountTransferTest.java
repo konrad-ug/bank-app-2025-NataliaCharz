@@ -2,9 +2,9 @@ package pl.bankapp.entity;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 import pl.bankapp.exception.IncomingTransactionFailedException;
@@ -18,13 +18,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 
+@Tag("unit")
 public class CompanyAccountTransferTest {
 
     private CompanyAccount companyAccount;
     private MockedStatic<NipValidator> mockedValidator;
+    record Transfer(String type, double amount) {}
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockedStatic<NipValidator> mocked = mockStatic(NipValidator.class);
         mocked.when(() -> NipValidator.validateNipOrThrow(anyString())).thenAnswer(invocation -> null);
         this.mockedValidator = mocked;
@@ -32,75 +34,88 @@ public class CompanyAccountTransferTest {
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         mockedValidator.close();
     }
 
-    record Transfer(String type, double amount) {}
-
-    @ParameterizedTest(name = "incomingTransfer {0} → expected balance {1}")
-    @CsvSource({
-            "1000, 1000",
-            "2000, 2000"
-    })
-    void testIncomingTransfer(double transfer, double expectedBalance) {
+    @ParameterizedTest
+    @MethodSource
+    public void testIncomingTransfer(double transfer, double expectedBalance) {
+        //given + when
         double balance = companyAccount.incomingTransfer(transfer);
+        //then
         assertEquals(expectedBalance, balance);
     }
+    static Stream<Arguments> testIncomingTransfer() {
+        return Stream.of(
+                Arguments.of(1000, 1000),
+                Arguments.of(2000, 2000)
+        );
+    }
 
-    @ParameterizedTest(name = "incomingTransfer {0} should throw exception")
-    @CsvSource({
-            "-1000",
-            "-500"
-    })
-    void testIncomingTransferInvalid(double transfer) {
+    @ParameterizedTest
+    @MethodSource
+    public void testIncomingTransferInvalid(double transfer) {
+        //given + when + then
         Exception exception = assertThrows(
                 IncomingTransactionFailedException.class,
                 () -> companyAccount.incomingTransfer(transfer)
         );
         assertTrue(exception.getMessage().contains("Wrong value of incoming transfer."));
     }
+    static Stream<Arguments> testIncomingTransferInvalid() {
+        return Stream.of(
+                Arguments.of(-1000),
+                Arguments.of(-500)
+        );
+    }
 
-    @ParameterizedTest(name = "outgoingTransfer {1} from income {0} → expected balance {2}")
-    @MethodSource("provideOutgoingTransfers")
-    void testOutgoingTransfer(double income, double outgo, double expectedBalance) {
+    @ParameterizedTest
+    @MethodSource
+    public void testOutgoingTransfer(double income, double outgo, double expectedBalance) {
+        //given + when
         companyAccount.incomingTransfer(income);
         double balance = companyAccount.outgoingTransfer(outgo);
+        //then
         assertEquals(expectedBalance, balance);
     }
-    static Stream<Arguments> provideOutgoingTransfers() {
+    static Stream<Arguments> testOutgoingTransfer() {
         return Stream.of(
                 Arguments.of(2000, 1000, 1000),
                 Arguments.of(2000, 2000, 0)
         );
     }
 
-    @ParameterizedTest(name = "outgoingTransfer {0} should throw exception")
-    @CsvSource({
-            "0", "-1000", "5000"
-    })
+    @ParameterizedTest
+    @MethodSource
     void testOutgoingTransferInvalid(double outgo) {
         companyAccount.incomingTransfer(1000);
         assertThrows(OutgoingTransactionFailedException.class, () -> companyAccount.outgoingTransfer(outgo));
     }
+    static Stream<Arguments> testOutgoingTransferInvalid() {
+        return Stream.of(
+                Arguments.of(0),
+                Arguments.of(-1000),
+                Arguments.of(5000)
+        );
+    }
 
-    @ParameterizedTest(name = "expressOutgoingTransfer {1} from income {0} → expected balance {2}")
-    @MethodSource("provideExpressTransfers")
-    void testExpressOutgoingTransfer(double income, double outgo, double expectedBalance) {
+    @ParameterizedTest
+    @MethodSource
+    public void testExpressOutgoingTransfer(double income, double outgo, double expectedBalance) {
         companyAccount.incomingTransfer(income);
         double balance = companyAccount.expressOutgoingTransfer(outgo);
         assertEquals(expectedBalance, balance);
     }
-
-    static Stream<Arguments> provideExpressTransfers() {
+    static Stream<Arguments> testExpressOutgoingTransfer() {
         return Stream.of(
                 Arguments.of(2000, 1000, 995),
                 Arguments.of(1000, 1000, -5)
         );
     }
 
-    @ParameterizedTest(name = "sequence of transfers {0} → expected history {1}")
-    @MethodSource("provideTransferSequences")
+    @ParameterizedTest
+    @MethodSource
     void testAllTransfersAndHistory(List<Transfer> transfers, List<Double> expectedHistory) {
         for (Transfer t : transfers) {
             switch (t.type()) {
@@ -111,8 +126,7 @@ public class CompanyAccountTransferTest {
         }
         assertEquals(expectedHistory, companyAccount.getHistory());
     }
-
-    static Stream<Arguments> provideTransferSequences() {
+    static Stream<Arguments> testAllTransfersAndHistory() {
         return Stream.of(
                 Arguments.of(
                         List.of(new Transfer("INCOMING", 1000.0)),

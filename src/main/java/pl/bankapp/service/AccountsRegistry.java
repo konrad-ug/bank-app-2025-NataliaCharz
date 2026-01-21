@@ -1,15 +1,17 @@
 package pl.bankapp.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
+import pl.bankapp.dto.PersonalAccountPartialUpdateDTO;
+import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.entity.PersonalAccount;
-import pl.bankapp.entity.TransferRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
 public class AccountsRegistry {
     private List<PersonalAccount> accounts = new ArrayList<>();
 
@@ -50,24 +52,24 @@ public class AccountsRegistry {
         return foundAccount;
     }
 
-    public PersonalAccount partialUpdatePersonalAccount(String pesel, String... args) {
+    public PersonalAccount partialUpdatePersonalAccount(String pesel, PersonalAccountPartialUpdateDTO updateDTO) {
         PersonalAccount account = findAccountByPesel(pesel);
-        if (args.length > 0 && args[0] != null) {
-            account.setName(args[0]);
+        if (updateDTO.getName() != null) {
+            account.setName(updateDTO.getName());
         }
-        if (args.length > 1 && args[1] != null) {
-            account.setSurname(args[1]);
+        if (updateDTO.getSurname() != null) {
+            account.setSurname(updateDTO.getSurname());
         }
         return account;
     }
 
-    public void createTransfer(String pesel, TransferRequest transferRequest) {
-        if (transferRequest == null){
+    public void createTransfer(String pesel, TransferDTO transferDTO) {
+        if (transferDTO == null) {
             throw new IllegalArgumentException("Provide transfer request");
         }
         PersonalAccount foundAccount = findAccountByPesel(pesel);
-        double amount = transferRequest.getAmount();
-        switch (transferRequest.getType()){
+        double amount = transferDTO.getAmount();
+        switch (transferDTO.getType()) {
             case EXPRESS -> foundAccount.expressOutgoingTransfer(amount);
             case INCOMING -> foundAccount.incomingTransfer(amount);
             case OUTGOING -> foundAccount.outgoingTransfer(amount);

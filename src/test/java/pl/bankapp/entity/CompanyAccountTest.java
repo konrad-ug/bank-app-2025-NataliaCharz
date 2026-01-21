@@ -1,5 +1,6 @@
 package pl.bankapp.entity;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,17 +12,16 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
+@Tag("unit")
 public class CompanyAccountTest {
 
-    private CompanyAccount companyAccount;
-
     @ParameterizedTest
-    @MethodSource("invalidNips")
-    void shouldCreateAccountWhenNipHasInvalidFormat(String nip) {
+    @MethodSource
+    public void shouldCreateAccountWhenNipHasInvalidFormat(String nip) {
         CompanyAccount account = new CompanyAccount("ABC", nip);
         assertNotNull(account);
     }
-    static Stream<String> invalidNips() {
+    static Stream<String> shouldCreateAccountWhenNipHasInvalidFormat() {
         return Stream.of(
                 "123",
                 "12345678901123321",
@@ -31,7 +31,7 @@ public class CompanyAccountTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNipNotActiveInMf() {
+    public void shouldThrowExceptionWhenNipNotActiveInMf() {
         try (MockedStatic<NipValidator> mocked = mockStatic(NipValidator.class)) {
             mocked.when(() -> NipValidator.validateNipOrThrow("1234567890"))
                     .thenThrow(new IllegalArgumentException("Company not registered."));
@@ -45,7 +45,7 @@ public class CompanyAccountTest {
     }
 
     @Test
-    void shouldCreateAccountWhenNipIsValidAndActive() {
+    public void shouldCreateAccountWhenNipIsValidAndActive() {
         try (MockedStatic<NipValidator> mocked = mockStatic(NipValidator.class)) {
             mocked.when(() -> NipValidator.validateNipOrThrow("8461627563"))
                     .thenAnswer(invocation -> null);

@@ -1,6 +1,7 @@
 package pl.bankapp.entity;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import pl.bankapp.exception.IncomingTransactionFailedException;
 import pl.bankapp.exception.OutgoingTransactionFailedException;
@@ -9,7 +10,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestPersonalAccountBalance {
+@Tag("unit")
+public class PersonalAccountBalanceTest {
 
     private PersonalAccount personalAccount;
 
