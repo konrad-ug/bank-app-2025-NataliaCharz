@@ -9,7 +9,7 @@ on:
 jobs:
   api-performance:
     runs-on: ubuntu-latest
-    services:
+#    services:
 
     steps:
       - name: Checkout code
