@@ -1,6 +1,8 @@
 package pl.bankapp.entity;
 
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.bankapp.validator.PeselValidator;
 import pl.bankapp.validator.PromoCodeValidator;
@@ -9,10 +11,13 @@ import java.util.List;
 
 @Getter
 @Setter
+@Entity
+@NoArgsConstructor
 public class PersonalAccount extends Account {
 
-    private String surname;
-    private String promoCode;
+    @Column(name="surname")
+    protected String surname;
+    protected String promoCode;
 
     public PersonalAccount(String name, String surname, String pesel) {
         super(name, PeselValidator.validatePesel(pesel));

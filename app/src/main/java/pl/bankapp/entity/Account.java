@@ -1,7 +1,10 @@
 package pl.bankapp.entity;
 
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import pl.bankapp.exception.IncomingTransactionFailedException;
 import pl.bankapp.exception.OutgoingTransactionFailedException;
 import pl.bankapp.service.SMTPClient;
@@ -12,14 +15,26 @@ import java.util.List;
 
 @Getter
 @Setter
+@MappedSuperclass
+@NoArgsConstructor
+@ToString
+@Access(AccessType.FIELD)
 public abstract class Account {
 
-    protected String name;
+    @Id
+    @Column
     protected String identification;
+    @Column(name="name")
+    protected String name;
+    @Column(name="balance")
     protected double balance;
+    @ToString.Exclude
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "account")
+    protected List<HistoryTransfer> historyTransfers;
+    @Transient
     private List<Double> history = new ArrayList<>();
 
-    public Account(String name, String identification) {
+    protected Account(String name, String identification) {
         this.name = name;
         this.identification = identification;
     }
