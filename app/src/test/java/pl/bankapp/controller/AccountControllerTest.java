@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import pl.bankapp.dto.PersonalAccountDTO;
 import pl.bankapp.dto.PersonalAccountPartialUpdateDTO;
 import pl.bankapp.dto.TransferDTO;
@@ -33,6 +34,7 @@ import static pl.bankapp.controller.AccountController.ACCOUNT_URL;
 
 @Tag("api")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class AccountControllerTest {
 
     @Autowired
