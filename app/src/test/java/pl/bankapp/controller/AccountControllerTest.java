@@ -268,18 +268,7 @@ public class AccountControllerTest {
                 .patch(ACCOUNT_URL + "/" + pesel)
                 .then()
                 .extract().response();
-
-        // then
-//        PersonalAccount returned;
-//        try {
-//            returned = objectMapper.readValue(response.getBody().asString(), PersonalAccount.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
         assertEquals(HttpStatus.OK.value(), response.statusCode());
-//        assertEquals("Ania", returned.getName());
-//        assertEquals("Charz", returned.getSurname());
-//        assertEquals("12345678909", returned.getIdentification());
     }
 
     @Test
@@ -303,18 +292,7 @@ public class AccountControllerTest {
                 .patch(ACCOUNT_URL + "/" + pesel)
                 .then()
                 .extract().response();
-
-        // then
-//        PersonalAccount returned;
-//        try {
-//            returned = objectMapper.readValue(response.getBody().asString(), PersonalAccount.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
         assertEquals(HttpStatus.OK.value(), response.statusCode());
-//        assertEquals("Natalia", returned.getName());
-//        assertEquals("Nowak", returned.getSurname());
-//        assertEquals("12345678909", returned.getIdentification());
     }
 
     @Test
