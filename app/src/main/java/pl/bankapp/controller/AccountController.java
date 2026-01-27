@@ -11,7 +11,6 @@ import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.exception.OutgoingTransactionFailedException;
 import pl.bankapp.mapper.PersonalAccountMapper;
 import pl.bankapp.service.AccountsRegistry;
-import pl.bankapp.service.PersonalAccountService;
 import pl.bankapp.validator.PeselValidator;
 
 import java.util.List;

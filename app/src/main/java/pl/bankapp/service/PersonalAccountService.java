@@ -2,6 +2,7 @@ package pl.bankapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.bankapp.entity.HistoryTransfer;
 import pl.bankapp.entity.PersonalAccount;
 import pl.bankapp.repository.PersonalAccountRepository;
@@ -14,6 +15,7 @@ import java.util.List;
 public class PersonalAccountService {
     private final PersonalAccountRepository personalAccountRepository;
 
+    @Transactional
     public void dumpAccountsToDatabase(List<PersonalAccount> accounts) {
         personalAccountRepository.deleteAll();
         for (PersonalAccount account : accounts) {

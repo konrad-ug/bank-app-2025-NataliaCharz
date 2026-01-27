@@ -28,9 +28,6 @@ public abstract class Account {
     protected String name;
     @Column(name="balance")
     protected double balance;
-    @ToString.Exclude
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "account")
-    protected List<HistoryTransfer> historyTransfers;
     @Transient
     private List<Double> history = new ArrayList<>();
 

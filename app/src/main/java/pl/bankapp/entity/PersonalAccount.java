@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import pl.bankapp.validator.PeselValidator;
 import pl.bankapp.validator.PromoCodeValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -16,8 +18,10 @@ import java.util.List;
 public class PersonalAccount extends Account {
 
     @Column(name="surname")
-    protected String surname;
-    protected String promoCode;
+    private String surname;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "account", orphanRemoval = true)
+    private List<HistoryTransfer> historyTransfers = new ArrayList<>();
+    private String promoCode;
 
     public PersonalAccount(String name, String surname, String pesel) {
         super(name, PeselValidator.validatePesel(pesel));

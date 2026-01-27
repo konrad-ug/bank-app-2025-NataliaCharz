@@ -1,29 +1,21 @@
 package pl.bankapp.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
-import pl.bankapp.dto.PersonalAccountDTO;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.bankapp.entity.PersonalAccount;
-import pl.bankapp.mapper.PersonalAccountMapper;
 import pl.bankapp.service.AccountsRegistry;
 import pl.bankapp.service.PersonalAccountService;
-import pl.bankapp.validator.PeselValidator;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
-@Controller("/database")
+@RestController
+@RequestMapping("/api/database")
 @RequiredArgsConstructor
 public class DatabaseController {
 
     private final PersonalAccountService personalAccountService;
-    private final PersonalAccountMapper personalAccountMapper;
     private final AccountsRegistry accountsRegistry;
 
     @PostMapping("/dump")

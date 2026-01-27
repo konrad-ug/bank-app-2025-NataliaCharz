@@ -13,6 +13,7 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 public class AccountsRegistry {
+
     private List<PersonalAccount> accounts = new ArrayList<>();
 
     public PersonalAccount addAccount(PersonalAccount account) {
