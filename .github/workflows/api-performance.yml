@@ -13,9 +13,9 @@ jobs:
       db:
         image: postgres:15
         env:
-          POSTGRES_DB: test
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
+          POSTGRES_DB: bank
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
         ports:
           - 5432:5432
         options: >-
