@@ -34,7 +34,7 @@ import static pl.bankapp.controller.AccountController.ACCOUNT_URL;
 
 @Tag("api")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+//@ActiveProfiles("test")
 public class AccountControllerTest {
 
     @Autowired
