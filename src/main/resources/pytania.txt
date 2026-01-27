@@ -1,3 +1,0 @@
-1. Czy mogę w pesel validator rzucić wyjątek zamiast zwracać invalid? Wtedy w kontolerze mógłbym złapać wyjątek i zwrócić odpowiedni response.
-2. Dodałam SMTP jako argument do metody, bo wtedy mogę ją zamockować. Czy to jest ok?
-3. Dodałam DTO, żeby oddzielić to co dostaje klient, a co jest w bazie.
