@@ -1,6 +1,9 @@
 package pl.bankapp.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,21 +19,28 @@ import java.util.List;
 @NoArgsConstructor
 public class PersonalAccount extends Account {
 
-    //Feature 1 – Zakładanie konta osobistego (PersonalAccount dziedziczy po klasie Account)
-    @Column(name="surname")
+    /**
+     * Feature 1 – Zakładanie konta osobistego (PersonalAccount dziedziczy po klasie Account)
+     */
+    @Column(name = "surname")
     private String surname;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "account", orphanRemoval = true)
     private List<HistoryTransaction> historyTransactions = new ArrayList<>();
     private String promoCode;
 
-    //Feature 3 - walidacja numeru pesel przy zakładaniu konta osobistego (validator/PeselValidator.java)
+    /**
+     * Feature 3 - walidacja numeru pesel przy zakładaniu konta osobistego (validator/PeselValidator.java)
+     */
     public PersonalAccount(String name, String surname, String pesel) {
         super(name, PeselValidator.validatePesel(pesel));
         this.surname = surname;
     }
 
-    //Feature 4 - zastosowanie kodu promocyjnego przy zakładaniu konta osobistego (validator/PromoCodeValidator.java)
-    //Feature 5 - zastosowanie kodu promocyjnego przy zakładaniu konta osobistego. Kod promocyjny jest ważny tylko dla osób urodzonych po 1960 roku.
+    /**
+     * Feature 4 - zastosowanie kodu promocyjnego przy zakładaniu konta osobistego (validator/PromoCodeValidator.java)
+     * Feature 5 - zastosowanie kodu promocyjnego przy zakładaniu konta osobistego. Kod promocyjny jest ważny tylko dla
+     * osób urodzonych po 1960 roku.
+     */
     public void usePromoCode(String promoCode) {
         String pesel = getIdentification();
         if (promoCode != null && PromoCodeValidator.validatePromoCode(promoCode) && PromoCodeValidator.validatePromoCodeWithCorrectYearBorn(pesel)) {
@@ -38,13 +48,17 @@ public class PersonalAccount extends Account {
         }
     }
 
-    //Feature 8 - opłata za przelew ekspresowy
+    /**
+     * Feature 8 - opłata za przelew ekspresowy
+     */
     @Override
     public double chargeAccount() {
         return 1;
     }
 
-    //Feature 12 - zaciąganie kredytu dla konta osobistego
+    /**
+     * Feature 12 - zaciąganie kredytu dla konta osobistego
+     */
     @Override
     public boolean submitForLoan(double loan) {
         if (checkLastThreeTransactionsAreIncome() || checkLastFiveTransactionsMustBeLargerThanLoan(loan)) {
@@ -55,7 +69,9 @@ public class PersonalAccount extends Account {
         }
     }
 
-    //Feature 12 - Ostatnie trzy zaksięgowane transakcje powinny być transakcjami wpłaty
+    /**
+     * Feature 12 - Ostatnie trzy zaksięgowane transakcje powinny być transakcjami wpłaty
+     */
     private boolean checkLastThreeTransactionsAreIncome() {
         List<Double> history = getHistory();
         for (int i = history.size() - 1; i > history.size() - 4; i--) {
@@ -66,7 +82,10 @@ public class PersonalAccount extends Account {
         return true;
     }
 
-    //Feature 12 - Suma ostatnich pięciu transakcji (konto musi mieć co najmniej pięć transakcji) powinna być większa niż kwota wnioskowanego kredytu.
+    /**
+     * Feature 12 - Suma ostatnich pięciu transakcji (konto musi mieć co najmniej pięć transakcji)
+     * powinna być większa niż kwota wnioskowanego kredytu.
+     */
     private boolean checkLastFiveTransactionsMustBeLargerThanLoan(double loan) {
         List<Double> history = getHistory();
         if (history.size() < 5) {

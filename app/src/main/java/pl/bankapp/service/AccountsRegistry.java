@@ -14,12 +14,14 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class AccountsRegistry {
 
-    /** Feature 14 - Accounts Registry(Rejestr kont) dla kont osobistych
+    /**
+     * Feature 14 - Accounts Registry(Rejestr kont) dla kont osobistych
      * Feature 14 - przechowywać konta osobiste w liście
      */
     private List<PersonalAccount> accounts = new ArrayList<>();
 
-    /** Feature 14 - pozwoli na dodawanie konta do tej listy
+    /**
+     * Feature 14 - pozwoli na dodawanie konta do tej listy
      */
     public PersonalAccount addAccount(PersonalAccount account) {
         for (PersonalAccount p : accounts) {
@@ -31,7 +33,8 @@ public class AccountsRegistry {
         return account;
     }
 
-    /** Feature 14 - pozwoli na wyszukanie konta za pomocą peselu
+    /**
+     * Feature 14 - pozwoli na wyszukanie konta za pomocą peselu
      */
     public PersonalAccount findAccountByPesel(String pesel) {
         return accounts
@@ -41,25 +44,29 @@ public class AccountsRegistry {
                 .orElseThrow(() -> new NoSuchElementException("No Account with provided pesel: " + pesel));
     }
 
-    /** Feature 14 - zwróci wszystkie konta
+    /**
+     * Feature 14 - zwróci wszystkie konta
      */
     public List<PersonalAccount> getAllAccounts() {
         return accounts;
     }
 
-    /** Feature 14 - zwróci ilość kont w rejestrze
+    /**
+     * Feature 14 - zwróci ilość kont w rejestrze
      */
     public int getAmountOfAccounts() {
         return accounts.size();
     }
 
-    /** Feature 15 - pozostałe metody CRUD
+    /**
+     * Feature 15 - pozostałe metody CRUD
      */
     public boolean deleteAccount(String pesel) {
         return accounts.removeIf(a -> pesel.equals(a.getIdentification()));
     }
 
-    /** Feature 15 - pozostałe metody CRUD
+    /**
+     * Feature 15 - pozostałe metody CRUD
      */
     public PersonalAccount updatePersonalAccount(String pesel, PersonalAccount personalAccount) {
         PersonalAccount foundAccount = findAccountByPesel(pesel);
@@ -82,7 +89,8 @@ public class AccountsRegistry {
         return account;
     }
 
-    /** Feature 17 - przelewy przez API
+    /**
+     * Feature 17 - przelewy przez API
      */
     public void createTransfer(String pesel, TransferDTO transferDTO) {
         if (transferDTO == null) {

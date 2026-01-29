@@ -10,13 +10,16 @@ import pl.bankapp.repository.PersonalAccountRepository;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Feature 20 - zrzuta rejestru kont
+ */
 @Service
 @RequiredArgsConstructor
 public class PersonalAccountService {
     private final PersonalAccountRepository personalAccountRepository;
 
     @Transactional
-    public void dumpAccountsToDatabase(List<PersonalAccount> accounts) {
+    public void registryToDatabase(List<PersonalAccount> accounts) {
         personalAccountRepository.deleteAll();
         for (PersonalAccount account : accounts) {
             for (Double amount : account.getHistory()) {
@@ -31,7 +34,7 @@ public class PersonalAccountService {
         }
     }
 
-    public List<PersonalAccount> loadAccountsFromDatabase() {
+    public List<PersonalAccount> databaseToRegistry() {
         return personalAccountRepository.findAll();
     }
 

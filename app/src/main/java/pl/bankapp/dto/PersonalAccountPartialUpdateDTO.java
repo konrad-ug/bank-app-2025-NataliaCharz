@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
+/**
+ * Feature 15 - Mikroserwisy - Kontroler REST dla kont osobistych
+ */@Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor

@@ -33,7 +33,7 @@ public class PersonalAccountServiceTest {
     }
 
     @Test
-    void dumpAccountsToDatabase_shouldSaveAccountsWithHistory() {
+    void registryWithHistory() {
         // given
         PersonalAccount account = new PersonalAccount("Joe", "Doe", "12345678909");
         account.incomingTransfer(150.0);
@@ -41,7 +41,7 @@ public class PersonalAccountServiceTest {
         List<PersonalAccount> accounts = List.of(account);
 
         // when
-        personalAccountService.dumpAccountsToDatabase(accounts);
+        personalAccountService.registryToDatabase(accounts);
 
         // then
         verify(personalAccountRepository, times(1)).deleteAll();
@@ -64,7 +64,7 @@ public class PersonalAccountServiceTest {
         when(personalAccountRepository.findAll()).thenReturn(mockAccounts);
 
         // when
-        List<PersonalAccount> result = personalAccountService.loadAccountsFromDatabase();
+        List<PersonalAccount> result = personalAccountService.databaseToRegistry();
 
         // then
         assertEquals(1, result.size());

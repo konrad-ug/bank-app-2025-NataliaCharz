@@ -7,11 +7,14 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+/**
+ * Feature 20 - zrzut rejestru kont
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name="HISTORY_TRANSACTION")
+@Table(name = "HISTORY_TRANSACTION")
 public class HistoryTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

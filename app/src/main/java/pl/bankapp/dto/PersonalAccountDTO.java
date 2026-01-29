@@ -3,6 +3,9 @@ package pl.bankapp.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Feature 15 - Mikroserwisy - Kontroler REST dla kont osobistych
+ */
 @Getter
 @Setter
 public class PersonalAccountDTO {

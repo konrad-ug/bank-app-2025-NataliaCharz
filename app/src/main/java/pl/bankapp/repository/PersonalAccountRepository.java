@@ -6,6 +6,9 @@ import pl.bankapp.entity.PersonalAccount;
 
 import java.util.Optional;
 
+/**
+ * Feature 20 - zrzut rejestru kont
+ */
 @Repository
 public interface PersonalAccountRepository extends JpaRepository<PersonalAccount, Long> {
     Optional<Object> findByIdentification(String identification);

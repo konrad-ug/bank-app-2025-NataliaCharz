@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("performance")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@ActiveProfiles("test")
 public class AccountPerformanceTest {
 
     @Autowired

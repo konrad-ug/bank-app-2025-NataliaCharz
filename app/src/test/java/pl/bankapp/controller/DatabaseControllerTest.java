@@ -59,13 +59,13 @@ class DatabaseControllerTest {
 
         //then
         assertEquals(HttpStatus.OK.value(), response.extract().statusCode());
-        List<PersonalAccount> dbAccounts = personalAccountService.loadAccountsFromDatabase();
+        List<PersonalAccount> dbAccounts = personalAccountService.databaseToRegistry();
         assertTrue(dbAccounts.size() >= 2);
     }
 
     @Test
     void loadDatabaseToRegistry_shouldPopulateRegistry() {
-        personalAccountService.dumpAccountsToDatabase(accountsRegistry.getAllAccounts());
+        personalAccountService.registryToDatabase(accountsRegistry.getAllAccounts());
         accountsRegistry.getAllAccounts().clear();
 
         //when
@@ -84,7 +84,7 @@ class DatabaseControllerTest {
     @Test
     void loadDatabaseToRegistry_shouldReturnEmptyIfNoData() {
         accountsRegistry.getAllAccounts().clear();
-        personalAccountService.dumpAccountsToDatabase(List.of());
+        personalAccountService.registryToDatabase(List.of());
 
         //when
         Response response = RestAssured.given()
