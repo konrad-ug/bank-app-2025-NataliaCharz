@@ -48,7 +48,14 @@ jobs:
 
       - name: Run API tests
         run: |
-          mvn clean verify -DincludeTags=api
+          mvn clean verify -DincludeTags=api -Djacoco.outputDir=target/jacoco-api
+
+      - name: Upload Jacoco HTML report for API
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-api-report
+          path: target/jacoco-apió
 
       - name: Upload test reports
         if: always()

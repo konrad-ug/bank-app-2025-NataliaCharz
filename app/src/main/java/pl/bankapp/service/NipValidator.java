@@ -1,6 +1,5 @@
 package pl.bankapp.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +15,13 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class NipValidator {
 
-    private static final String NIP_REGEX = "^[0-9]{10}$";
-    private final HttpClient httpClient = HttpClient.newHttpClient();
 
+    private static final String NIP_REGEX = "^[0-9]{10}$";
+    HttpClient httpClient = HttpClient.newHttpClient();
+
+    /**
+     * Feature 18 - walidacja numeru NIP firmy przy zakładaniu konta firmowego
+     */
     public void validateNipOrThrow(String nip) {
         if (!isFormatValid(nip)) {
             return;
@@ -28,10 +31,16 @@ public class NipValidator {
         }
     }
 
+    /**
+     * Feature 7 - walidacja numeru NIP firmy przy zakładaniu konta firmowego, długość 10 cyfr
+     */
     private static boolean isFormatValid(String nip) {
         return nip != null && nip.matches(NIP_REGEX);
     }
 
+    /**
+     * Feature 18 - walidacja numeru NIP. Stworzy URL do API Ministerstwa Finansów
+     */
     private String buildMfUrl(String nip) {
         String base = System.getenv("BANK_APP_MF_URL");
         if (base == null || base.isBlank()) {
@@ -44,6 +53,11 @@ public class NipValidator {
         return String.format("%s/api/search/nip/%s?date=%s", base, nip, date);
     }
 
+    /**
+     * Feature 18 - walidacja numeru NIP firmy przy zakładaniu konta firmowego
+     * Dopiszemy metodę która wyśle zapytanie do API (jako parametr przyjmie NIP) i
+     * zwraca True jeżeli odpowiedź zawiera "statusVat": "Czynny", FALSE w innym wypadku.
+     */
     private boolean isNipActiveInMf(String nip) {
         String url = buildMfUrl(nip);
         HttpRequest request = HttpRequest.newBuilder()
@@ -54,7 +68,7 @@ public class NipValidator {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println("MF response: " + response.body());
-            if (response.body() != null && response.body().contains("\"statusVat\":\"Czynny\"")){
+            if (response.body() != null && response.body().contains("\"statusVat\":\"Czynny\"")) {
                 log.info("NIP {} is active in MF database.", nip);
                 return true;
             } else {

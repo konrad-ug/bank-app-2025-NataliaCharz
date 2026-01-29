@@ -4,14 +4,17 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import pl.bankapp.dto.PersonalAccountPartialUpdateDTO;
 import pl.bankapp.dto.TransferDTO;
 import pl.bankapp.entity.PersonalAccount;
 import pl.bankapp.entity.TransferType;
-import pl.bankapp.exception.IncomingTransactionFailedException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -99,153 +102,115 @@ public class AccountRegistryTest {
     }
 
     @Test
-    public void shouldUpdateOnlyName() {
+    public void shouldUpdatePersonalAccount() {
         //given
-        PersonalAccountPartialUpdateDTO updateDTO = new PersonalAccountPartialUpdateDTO("Mike", null);
+        String pesel = "22222222222";
+        PersonalAccount updateAccount = new PersonalAccount("Adam", "Nowak", pesel);
         //when
-        PersonalAccount updated = registry.partialUpdatePersonalAccount("11111111111", updateDTO);
-
+        PersonalAccount updated = registry.updatePersonalAccount(pesel, updateAccount);
         //then
-        assertEquals("Mike", updated.getName());
-        assertEquals("Maria", updated.getSurname());
+        assertEquals("Adam", updated.getName());
+        assertEquals("Nowak", updated.getSurname());
     }
 
     @Test
-    public void shouldUpdateOnlySurname() {
+    public void shouldThrowExceptionWhenUpdatingNonExistingAccount() {
         //given
-        PersonalAccountPartialUpdateDTO updateDTO = new PersonalAccountPartialUpdateDTO(null, "Smith");
-
-        //when
-        PersonalAccount updated = registry.partialUpdatePersonalAccount("11111111111", updateDTO);
-
-        //then
-        assertEquals("Jose", updated.getName());
-        assertEquals("Smith", updated.getSurname());
-    }
-
-    @Test
-    public void shouldUpdateBothNameAndSurname() {
-        //given
-        PersonalAccountPartialUpdateDTO updateDTO = new PersonalAccountPartialUpdateDTO("Alice", "Brown");
-
-        //when
-        PersonalAccount updated = registry.partialUpdatePersonalAccount("11111111111", updateDTO);
-
-        //then
-        assertEquals("Alice", updated.getName());
-        assertEquals("Brown", updated.getSurname());
-    }
-
-//    @Test
-//    public void shouldRemainUnUpdatedWhenNoArgumentsProvided() {
-//        //given
-//        PersonalAccount account = new PersonalAccount("John", "Doe", "12345678901");
-//        registry.addAccount(account);
-//
-//        //when
-//        PersonalAccount updated = registry.partialUpdatePersonalAccount("12345678901");
-//
-//        //then
-//        assertEquals("John", updated.getName());
-//        assertEquals("Doe", updated.getSurname());
-//    }
-
-    @Test
-    public void shouldCreateIncomingTransferWhenAccountExists(){
-        //given
-        TransferDTO transferDTO = new TransferDTO(100.0, TransferType.INCOMING);
-        String pesel = "12345678905";
-        //when
-        registry.createTransfer(pesel, transferDTO);
-        double expected = 100.0;
-        double actual = registry.findAccountByPesel(pesel).getBalance();
-        //then
-        assertEquals(expected, actual);
-    }
-    @Test
-    public void shouldCreateOutgoingTransferWhenAccountExists(){
-        //given
-        TransferDTO transferDTO = new TransferDTO(100.0, TransferType.OUTGOING);
-        String pesel = "12345678905";
-        registry.findAccountByPesel(pesel).incomingTransfer(150.0);
-        //when
-        registry.createTransfer(pesel, transferDTO);
-        double expected = 50.0;
-        double actual = registry.findAccountByPesel(pesel).getBalance();
-        //then
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void shouldCreateExpressTransferWhenAccountExists(){
-        //given
-        TransferDTO transferDTO = new TransferDTO(100.0, TransferType.EXPRESS);
-        String pesel = "12345678905";
-        registry.findAccountByPesel(pesel).incomingTransfer(150.0);
-        //when
-        registry.createTransfer(pesel, transferDTO);
-        double expected = 49.0;
-        double actual = registry.findAccountByPesel(pesel).getBalance();
-        //then
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void shouldThrowWhenAccountDoesNotExist(){
-        //given
-        TransferDTO transferDTO = new TransferDTO(100.0, TransferType.EXPRESS);
         String pesel = "99999999999";
+        PersonalAccount updateAccount = new PersonalAccount("Adam", "Nowak", pesel);
+        //when
         Exception exception = assertThrows(NoSuchElementException.class, () -> {
-            registry.createTransfer(pesel, transferDTO);
+            registry.updatePersonalAccount(pesel, updateAccount);
         });
-        //when
-        String expected = "No Account with provided pesel: " + pesel;
-        String actual = exception.getMessage();
         //then
-        assertEquals(expected, actual);
+        String expectedMessage = "No Account with provided pesel: " + pesel;
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
-    public void shouldThrowWhenTransferTypeIsNull(){
+    public void shouldDeletePersonalAccount() {
         //given
-        TransferDTO transferDTO = new TransferDTO(100.0,null);
-        String pesel = "12345678905";
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            registry.createTransfer(pesel, transferDTO);
-        });
+        String pesel = "33333333333";
         //when
-        String expected = "Wrong type of transfer";
-        String actual = exception.getMessage();
+        boolean isDeleted = registry.deleteAccount(pesel);
         //then
-        assertEquals(expected, actual);
+        assertTrue(isDeleted);
+        assertThrows(NoSuchElementException.class, () -> {
+            registry.findAccountByPesel(pesel);
+        });
     }
 
     @Test
-    public void shouldThrowWhenAmountIsNegative(){
+    public void shouldReturnFalseWhenDeletingNonExistingAccount() {
         //given
-        TransferDTO transferDTO = new TransferDTO(-100.0, TransferType.INCOMING);
-        String pesel = "12345678905";
-        Exception exception = assertThrows(IncomingTransactionFailedException.class, () -> {
-            registry.createTransfer(pesel, transferDTO);
-        });
+        String pesel = "88888888888";
         //when
-        String expected = "Wrong value of incoming transfer.";
-        String actual = exception.getMessage();
+        boolean isDeleted = registry.deleteAccount(pesel);
         //then
-        assertEquals(expected, actual);
+        assertFalse(isDeleted);
     }
 
-    @Test
-    public void shouldThrowWhenTransferRequestIsNull(){
-        TransferDTO transferDTO = null;
-        String pesel = "12345678905";
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+    @ParameterizedTest
+    @MethodSource
+    public void shouldPartialUpdateBothNameAndOrSurname(String pesel, PersonalAccountPartialUpdateDTO updateDTO, String expectedName, String expectedSurname) {
+        //when
+        PersonalAccount updated = registry.partialUpdatePersonalAccount(pesel, updateDTO);
+        //then
+        assertEquals(expectedName, updated.getName());
+        assertEquals(expectedSurname, updated.getSurname());
+    }
+
+    static Stream <Arguments> shouldPartialUpdateBothNameAndOrSurname() {
+        return Stream.of(
+                Arguments.of("11111111111", new PersonalAccountPartialUpdateDTO("Mike", null), "Mike", "Maria"),
+                Arguments.of("11111111111", new PersonalAccountPartialUpdateDTO(null, "Smith"), "Jose", "Smith"),
+                Arguments.of("11111111111", new PersonalAccountPartialUpdateDTO("Jan", "Kowalski"), "Jan", "Kowalski")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void shouldCreateTransferWhenAccountExists(TransferDTO transferDTO, String pesel, double expectedBalance) {
+        //given
+        if (transferDTO.getType() == TransferType.OUTGOING || transferDTO.getType() == TransferType.EXPRESS) {
+            registry.findAccountByPesel(pesel).incomingTransfer(150.0);
+        }
+        //when
+        registry.createTransfer(pesel, transferDTO);
+        double actualBalance = registry.findAccountByPesel(pesel).getBalance();
+        //then
+        assertEquals(expectedBalance, actualBalance);
+    }
+
+    static Stream <Arguments> shouldCreateTransferWhenAccountExists() {
+        return Stream.of(
+                Arguments.of(new TransferDTO(200.0, TransferType.INCOMING), "12345678905", 200.0),
+                Arguments.of(new TransferDTO(50.0, TransferType.OUTGOING), "12345678905", 100.0),
+                Arguments.of(new TransferDTO(50.0, TransferType.EXPRESS), "12345678905", 99.0)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void shouldThrowExceptionWhenCreatingTransfer(TransferDTO transferDTO, String pesel, String expectedMessage) {
+        //given
+        Exception exception = assertThrows(Exception.class, () -> {
             registry.createTransfer(pesel, transferDTO);
         });
         //when
-        String expected = "Provide transfer request";
-        String actual = exception.getMessage();
+        String actualMessage = exception.getMessage();
         //then
-        assertEquals(expected, actual);
+        assertEquals(expectedMessage, actualMessage);
+
+    }
+
+    static Stream <Arguments> shouldThrowExceptionWhenCreatingTransfer() {
+        return Stream.of(
+                Arguments.of(new TransferDTO(100.0, null), "12345678905", "Wrong type of transfer"),
+                Arguments.of(new TransferDTO(-50.0, TransferType.INCOMING), "12345678905",  "Wrong value of incoming transfer."),
+                Arguments.of(null, "12345678905", "Provide transfer request"),
+                Arguments.of(new TransferDTO(100.0, TransferType.EXPRESS), "99999999999", "No Account with provided pesel: 99999999999")
+        );
     }
 }

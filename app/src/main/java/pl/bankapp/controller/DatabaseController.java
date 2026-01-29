@@ -10,6 +10,9 @@ import pl.bankapp.service.PersonalAccountService;
 
 import java.util.List;
 
+/**
+ * Feature 20 - zrzut rejestru kont
+ */
 @RestController
 @RequestMapping("/api/database")
 @RequiredArgsConstructor
@@ -20,13 +23,13 @@ public class DatabaseController {
 
     @PostMapping("/dump")
     public void dumpRegistryToDatabase() {
-        personalAccountService.dumpAccountsToDatabase(accountsRegistry.getAllAccounts());
+        personalAccountService.registryToDatabase(accountsRegistry.getAllAccounts());
     }
 
     @PostMapping("/load")
     public void loadDatabaseToRegistry() {
         accountsRegistry.getAllAccounts().clear();
-        List<PersonalAccount> accounts = personalAccountService.loadAccountsFromDatabase();
+        List<PersonalAccount> accounts = personalAccountService.databaseToRegistry();
         accounts.forEach(accountsRegistry::addAccount);
     }
 }

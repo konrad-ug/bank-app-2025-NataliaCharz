@@ -1,18 +1,21 @@
 package pl.bankapp.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
+/**
+ * Feature 20 - zrzut rejestru kont
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-public class HistoryTransfer {
+@Table(name = "HISTORY_TRANSACTION")
+public class HistoryTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
