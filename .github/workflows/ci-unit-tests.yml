@@ -1,3 +1,6 @@
+# Feature 9 -CI Pipeline
+# Feature 9b -Test Coverage lokalnie - JaCoCo
+# Feature 10 – Code Coverage Threshold - pom.xml COVERRATIO: 100%
 name: Unit tests
 
 on:
@@ -48,14 +51,14 @@ jobs:
           mvn -v
 
       - name: Run Maven (clean verify) and generate JaCoCo report
-        run: mvn clean verify -DincludeTags=unit
+        run: mvn clean verify -DincludeTags=unit -Djacoco.outputDir=target/jacoco-unit
 
       - name: Upload JaCoCo HTML report (artifact)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: target/site/jacoco
+          path: target/jacoco-unit
 
       - name: Inspect test & jacoco outputs
         run: |

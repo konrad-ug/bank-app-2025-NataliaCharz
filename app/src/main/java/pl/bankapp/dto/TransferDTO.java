@@ -9,6 +9,7 @@ import pl.bankapp.entity.TransferType;
 @Getter
 @Setter
 public class TransferDTO {
+    //Feature 19 - przelewy przez API - DTO dla przelewów
     private double amount;
     private TransferType type;
 

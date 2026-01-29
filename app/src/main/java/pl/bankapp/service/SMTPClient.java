@@ -1,8 +1,9 @@
 package pl.bankapp.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+/** Feature 19 - wysyłanie historii przelewów na email
+ */
 @Service
 public class SMTPClient {
 
