@@ -9,6 +9,14 @@ surname: Charzyńska
 group: 3
 
 ## How to start the app
-
+1. Run docker image for PostgreSQL
+2. Run DBeaver
+3. Run Application
+4. Use swagger to check CRUD operations.
 
 ## How to execute tests
+1. Unit and api tests in app module.
+2. Cucumber in cucumber module.
+3. Run every single test (green arrow) or run all tests together (right click on folder and run tests)
+4. Maven: mvn clean verify
+5. If only mvn tests, jacoco won't show the pipelines.
